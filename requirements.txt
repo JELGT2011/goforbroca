@@ -1,0 +1,13 @@
+celery[redis]
+flask
+flask-marshmallow
+flask-migrate
+flask-restful
+flask-sqlalchemy
+gunicorn
+marshmallow-sqlalchemy
+marshmallow<3
+passlib
+psycopg2==2.8.4
+python-dotenv
+requests==2.22.0
