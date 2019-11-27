@@ -8,6 +8,7 @@ from flask_marshmallow import Marshmallow
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from passlib.context import CryptContext
+import sqlalchemy.dialects.postgresql as PostgresDialect
 
 db = SQLAlchemy()
 ma = Marshmallow()
