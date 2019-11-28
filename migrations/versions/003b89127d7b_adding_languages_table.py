@@ -7,6 +7,7 @@ Create Date: 2019-11-26 23:02:55.914258
 """
 from alembic import op
 import sqlalchemy as sa
+from sqlalchemy.dialects import postgresql
 
 
 # revision identifiers, used by Alembic.
@@ -18,8 +19,8 @@ depends_on = None
 
 def upgrade():
     op.create_table(
-        'language',
-        sa.Column('id', sa.Integer(), primary_key=True),
+        'languages',
+        sa.Column('id', postgresql.UUID(), primary_key=True),
         sa.Column('name', sa.String(length=255), unique=True, nullable=False)
     )
 

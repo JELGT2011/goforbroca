@@ -1,0 +1,8 @@
+FLASK_ENV=development
+FLASK_APP=goforbroca.app:create_app
+SECRET_KEY=changeme
+DATABASE_URI=postgresql://localhost:5432/goforbroca-development
+CELERY_BROKER_URL=redis://localhost:6379
+CELERY_RESULT_BACKEND_URL=redis://localhost:6379
+VERIFY_TOKEN={GET FROM HEROKU}
+ACCESS_TOKEN={GET FROM HEROKU}
