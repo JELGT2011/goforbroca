@@ -19,8 +19,6 @@ def upgrade():
     op.create_table(
         'translations',
         sa.Column('id', sa.Integer(), primary_key=True, autoincrement=True),
-        sa.Column('from_language_id', sa.Integer(), sa.ForeignKey('languages.id')),
-        sa.Column('to_language_id', sa.Integer(), sa.ForeignKey('languages.id')),
         sa.Column('from_word_id', sa.Integer(), sa.ForeignKey('words.id')),
         sa.Column('to_word_id', sa.Integer(), sa.ForeignKey('words.id')),
         sa.Column('count', sa.Integer()),
