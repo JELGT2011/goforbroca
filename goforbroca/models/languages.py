@@ -1,11 +1,7 @@
-from sqlalchemy.dialects import postgresql
-
 from goforbroca.extensions import db
+from goforbroca.models.base import Base
 
 
-class Language(db.Model):
-    id = db.Column(postgresql.UUID(), primary_key=True)
-    name = db.Column(db.String(255), unique=True, nullable=False)
-
-    def __repr__(self):
-        return f"<Language {self.id}: {self.name}>"
+class Languages(Base):
+    name = db.Column(db.String(256), unique=True, nullable=False)
+    translation = db.relationship('Translations')

@@ -1,4 +1,6 @@
-factory_boy
+-r requirements.txt
+factory_boy==2.12.0
+ipython==7.10.0
 pytest
 pytest-factoryboy
 pytest-flask

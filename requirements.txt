@@ -11,3 +11,4 @@ passlib
 psycopg2==2.8.4
 python-dotenv
 requests==2.22.0
+twilio==6.33.1
