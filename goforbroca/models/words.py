@@ -7,4 +7,3 @@ class Words(Base):
     pronunciation = db.Column(db.String(256), nullable=True)
     etymology = db.Column(db.Text(), nullable=True)
     definition = db.Column(db.Text(), nullable=True)
-    translation = db.relationship('Translations')

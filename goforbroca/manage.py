@@ -19,9 +19,32 @@ def init():
     and create a new user named admin with password admin
     """
     from goforbroca.extensions import db
-    click.echo("create database")
+
+    click.echo("creating database")
     db.create_all()
-    click.echo("done")
+    click.echo("done creating database")
+
+    seed()
+
+
+@cli.command("seed")
+def seed():
+    from goforbroca.extensions import db
+    from goforbroca.models.languages import Languages
+
+    click.echo("seeding data")
+
+    languages_seed_data = [
+        {'name': '한국어'},
+        {'name': '汉语'},
+    ]
+
+    for seed_data in languages_seed_data:
+        language = Languages(**seed_data)
+        db.session.add(language)
+    db.session.commit()
+
+    click.echo("done seeding data")
 
 
 if __name__ == "__main__":

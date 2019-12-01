@@ -19,7 +19,7 @@ depends_on = None
 def upgrade():
     op.create_table(
         'users',
-        sa.Column('id', postgresql.UUID(), primary_key=True),
+        sa.Column('id', sa.Integer(), primary_key=True, autoincrement=True),
         sa.Column('phone_number', sa.String(length=16), unique=True, nullable=False),
     )
 
