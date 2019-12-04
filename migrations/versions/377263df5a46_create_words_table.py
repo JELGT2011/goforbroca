@@ -19,10 +19,11 @@ def upgrade():
     op.create_table(
         'words',
         sa.Column('id', sa.Integer(), primary_key=True, autoincrement=True),
-        sa.Column('name', sa.String(256), index=True),
-        sa.Column('pronunciation', sa.String(256), nullable=True),
-        sa.Column('etymology', sa.Text(), nullable=True),
-        sa.Column('definition', sa.Text(), nullable=True),
+        sa.Column('language_id', sa.Integer(), sa.ForeignKey('languages.id'), nullable=False),
+        sa.Column('name', sa.String(256), index=True, nullable=False),
+        sa.Column('pronunciation', sa.String(256)),
+        sa.Column('etymology', sa.Text()),
+        sa.Column('definition', sa.Text()),
     )
 
 
