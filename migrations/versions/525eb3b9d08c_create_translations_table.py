@@ -19,6 +19,8 @@ def upgrade():
     op.create_table(
         'translations',
         sa.Column('id', sa.Integer(), primary_key=True, autoincrement=True),
+        sa.column('created_at', sa.DateTime(timezone=True), nullable=False),
+        sa.column('updated_at', sa.DateTime(timezone=True)),
         sa.Column('from_word_id', sa.Integer(), sa.ForeignKey('words.id'), nullable=False),
         sa.Column('to_word_id', sa.Integer(), sa.ForeignKey('words.id'), nullable=False),
         sa.Column('rank', sa.Integer()),

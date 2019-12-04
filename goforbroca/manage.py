@@ -59,6 +59,7 @@ def seed_1000mostcommonwords_com():
                 from_word = Words.get_by_name(from_name) or Words.create(language_id=language.id, name=from_name)
                 to_word = Words.get_by_name(to_name) or Words.create(language_id=english.id, name=to_name)
                 Translations.create(from_word_id=from_word.id, to_word_id=to_word.id, rank=rank)
+                Translations.create(from_word_id=to_word.id, to_word_id=from_word.id, rank=rank)
 
 
 if __name__ == "__main__":

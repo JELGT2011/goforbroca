@@ -19,6 +19,8 @@ def upgrade():
     op.create_table(
         'users',
         sa.Column('id', sa.Integer(), primary_key=True, autoincrement=True),
+        sa.column('created_at', sa.DateTime(timezone=True), nullable=False),
+        sa.column('updated_at', sa.DateTime(timezone=True)),
         sa.Column('phone_number', sa.String(length=16), unique=True, nullable=False),
     )
 
