@@ -1,8 +1,8 @@
-"""create repetitions table
+"""create courses table
 
 Revision ID: 594ff349506e
-Revises: 525eb3b9d08c
-Create Date: 2019-12-03 20:33:49.426948
+Revises: 93a3f33ab9fc
+Create Date: 2019-12-03 20:34:03.575700
 
 """
 import sqlalchemy as sa
@@ -10,22 +10,22 @@ from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = '594ff349506e'
-down_revision = '525eb3b9d08c'
+down_revision = '93a3f33ab9fc'
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
     op.create_table(
-        'repetitions',
+        'courses',
         sa.Column('id', sa.Integer(), primary_key=True, autoincrement=True),
         sa.column('created_at', sa.DateTime(timezone=True), nullable=False),
         sa.column('updated_at', sa.DateTime(timezone=True)),
-        sa.Column('iteration', sa.Integer()),
-        sa.Column('score', sa.Float()),
-        sa.column('completed_at', sa.DateTime(timezone=True)),
+        sa.Column('user_id', sa.Integer(), sa.ForeignKey('users.id'), nullable=False),
+        sa.Column('language_id', sa.Integer(), sa.ForeignKey('languages.id'), nullable=False),
+        sa.Column('words_per_week', sa.Integer(), nullable=False)
     )
 
 
 def downgrade():
-    op.drop_table('repetitions')
+    op.drop_table('courses')
