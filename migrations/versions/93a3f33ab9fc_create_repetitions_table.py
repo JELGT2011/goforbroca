@@ -10,7 +10,7 @@ from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = '93a3f33ab9fc'
-down_revision = '525eb3b9d08c'
+down_revision = '594ff349506e'
 branch_labels = None
 depends_on = None
 
@@ -19,12 +19,12 @@ def upgrade():
     op.create_table(
         'repetitions',
         sa.Column('id', sa.Integer(), primary_key=True, autoincrement=True),
-        sa.column('created_at', sa.DateTime(timezone=True), nullable=False),
-        sa.column('updated_at', sa.DateTime(timezone=True)),
+        sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.func.now()),
+        sa.Column('updated_at', sa.DateTime(timezone=True), onupdate=sa.func.now()),
         sa.Column('course_id', sa.Integer(), sa.ForeignKey('courses.id'), nullable=False),
         sa.Column('iteration', sa.Integer()),
         sa.Column('score', sa.Float()),
-        sa.column('completed_at', sa.DateTime(timezone=True)),
+        sa.Column('completed_at', sa.DateTime(timezone=True)),
     )
 
 

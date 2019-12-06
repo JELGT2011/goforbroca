@@ -19,8 +19,8 @@ def upgrade():
     op.create_table(
         'languages',
         sa.Column('id', sa.Integer(), primary_key=True, autoincrement=True),
-        sa.column('created_at', sa.DateTime(timezone=True), nullable=False),
-        sa.column('updated_at', sa.DateTime(timezone=True)),
+        sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.func.now()),
+        sa.Column('updated_at', sa.DateTime(timezone=True), onupdate=sa.func.now()),
         sa.Column('name', sa.String(length=256), unique=True, nullable=False),
     )
 

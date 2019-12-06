@@ -1,5 +1,7 @@
 from typing import List
 
+from sqlalchemy import func
+
 from goforbroca.extensions import db
 
 
@@ -7,8 +9,8 @@ class Base(db.Model):
     __abstract__ = True
 
     id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
-    created_at = db.Column(db.DateTime(timezone=True), nullable=False)
-    updated_at = db.Column(db.DATETIME(timezone=True))
+    created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
+    updated_at = db.Column(db.DateTime(timezone=True), onupdate=func.now())
 
     def __repr__(self):
         return f'<{self.__class__} {self.id}>: {self.__dict__}'
