@@ -1,3 +1,4 @@
+from celery.schedules import crontab
 from flask import Flask
 
 from goforbroca.extensions import db, migrate, celery
@@ -40,6 +41,12 @@ def init_celery(app=None):
     celery.conf.broker_url = app.config['CELERY_BROKER_URL']
     celery.conf.result_backend = app.config['CELERY_RESULT_BACKEND']
     celery.conf.update(app.config)
+    celery.conf.beat_schedule = {
+        'learn-every-day': {
+            'task': 'tasks.learn',
+            'schedule': crontab(minute=0, hour=12),
+        }
+    }
 
     class ContextTask(celery.Task):
         """Make celery tasks work with Flask app context"""

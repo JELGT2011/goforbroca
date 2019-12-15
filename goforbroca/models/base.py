@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List
 
 from sqlalchemy import func
@@ -32,11 +33,8 @@ class Base(db.Model):
         db.session.commit()
         return models
 
-    def update(self, **kwargs) -> 'Base':
-        for k, v in kwargs:
-            self.__dict__[k] = v
-        # TODO
-        # self.updated_at = now()
+    def save(self) -> 'Base':
+        self.updated_at = datetime.utcnow()
         db.session.add(self)
         db.session.commit()
         return self

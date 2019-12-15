@@ -1,3 +1,5 @@
+from glob import glob
+
 import click
 from flask.cli import FlaskGroup
 
@@ -29,39 +31,25 @@ def init():
 
 @cli.command("seed")
 def seed():
-    seed_languages()
     seed_1000mostcommonwords_com()
 
 
-def seed_languages():
-    from goforbroca.models.languages import Languages
-    click.echo("seeding languages")
-    seed_data = [
-        {'name': 'english'},
-        {'name': '한국어'},
-        {'name': '汉语'},
-    ]
-    Languages.bulk_create(seed_data)
-    click.echo("done seeding languages")
-
-
 def seed_1000mostcommonwords_com():
-    from goforbroca.models.languages import Languages
-    from goforbroca.models.words import Words
-    from goforbroca.models.translations import Translations
-    click.echo("seeding words and translations")
-    languages = [language for language in Languages.all() if language.name != 'english']
-    english = Languages.get_by_name('english')
-    for language in languages:
-        with open(f'data/1000mostcommonwords.com/{language.name}.csv') as language_csv:
-            for line in language_csv:
-                rank, from_name, to_name = line.strip().split(',')
+    from goforbroca.models.deck import StandardDeck
+    from goforbroca.models.flashcard import Flashcard
+
+    click.echo("seeding 1000mostcommonwords.com")
+    for common_words_file in glob('data/1000mostcommonwords.com/*.csv'):
+        base_name = common_words_file.split('/')[-1]
+        language_name = base_name.split('.')[0]
+        standard_deck = StandardDeck.create(name=f'1000mostcommonwords.com: {language_name}')
+        with open(common_words_file) as common_words_csv:
+            for line in common_words_csv:
+                rank, front, back = line.strip().split(',')
                 rank = int(rank)
-                from_word = Words.get_by_name(from_name) or Words.create(language_id=language.id, name=from_name)
-                to_word = Words.get_by_name(to_name) or Words.create(language_id=english.id, name=to_name)
-                Translations.create(from_word_id=from_word.id, to_word_id=to_word.id, rank=rank)
-                Translations.create(from_word_id=to_word.id, to_word_id=from_word.id, rank=rank)
-    click.echo("done seeding words and translations")
+                Flashcard.create(standard_deck_id=standard_deck.id, front=front, back=back, rank=rank)
+                Flashcard.create(standard_deck_id=standard_deck.id, front=back, back=front, rank=rank)
+    click.echo("done seeding 1000mostcommonwords.com")
 
 
 if __name__ == "__main__":

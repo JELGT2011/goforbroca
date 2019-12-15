@@ -7,6 +7,7 @@ flask-sqlalchemy
 gunicorn
 marshmallow-sqlalchemy
 marshmallow<3
+numpy==1.17.4
 passlib
 psycopg2==2.8.4
 python-dotenv
