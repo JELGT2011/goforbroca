@@ -1,6 +1,5 @@
 from flask import Flask
 
-from goforbroca.api import views
 from goforbroca.extensions import db, migrate, celery
 
 
@@ -32,7 +31,8 @@ def configure_extensions(app, cli):
 def register_blueprints(app):
     """register all blueprints for application
     """
-    app.register_blueprint(views.blueprint)
+    from goforbroca.api.sms import sms
+    app.register_blueprint(sms)
 
 
 def init_celery(app=None):

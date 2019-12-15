@@ -7,9 +7,11 @@ from goforbroca.models.base import Base
 
 
 class Repetitions(Base):
+    user_id = db.Column(db.Integer(), ForeignKey('users.id'), nullable=False)
     course_id = db.Column(db.Integer(), ForeignKey('courses.id'), nullable=False)
     translation_id = db.Column(db.Integer(), ForeignKey('translations.id'), nullable=False)
     iteration = db.Column(db.Integer(), nullable=False)
+    active = db.Column(db.Boolean(), nullable=False)
     score = db.Column(db.Float())
     completed_at = db.Column(db.DateTime(timezone=True))
 

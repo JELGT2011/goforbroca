@@ -18,8 +18,6 @@ class Base(db.Model):
     @classmethod
     def create(cls, **kwargs) -> 'Base':
         model = cls(**kwargs)
-        # TODO
-        # mode.created_at = now()
         db.session.add(model)
         db.session.commit()
         return model
