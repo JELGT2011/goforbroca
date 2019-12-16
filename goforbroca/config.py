@@ -1,17 +1,17 @@
-"""Default configuration
-
-Use env var to override
-"""
 import os
 
-ENV = os.getenv("FLASK_ENV")
-DEBUG = ENV == "development"
-SECRET_KEY = os.getenv("SECRET_KEY")
+ENV = os.environ['FLASK_ENV']
+DEBUG = ENV == 'development'
 
-SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URI")
+SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URI']
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 JWT_BLACKLIST_ENABLED = True
 JWT_BLACKLIST_TOKEN_CHECKS = ['access', 'refresh']
-CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
-CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND_URL")
+
+CELERY_BROKER_URL = os.environ['CELERY_BROKER_URL']
+CELERY_RESULT_BACKEND = os.environ['CELERY_RESULT_BACKEND_URL']
+
+TWILIO_ACCOUNT_SID = os.environ['TWILIO_ACCOUNT_SID']
+TWILIO_AUTH_TOKEN = os.environ['TWILIO_AUTH_TOKEN']
+TWILIO_PHONE_NUMBER = os.environ['TWILIO_PHONE_NUMBER']

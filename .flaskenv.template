@@ -1,6 +1,8 @@
 FLASK_ENV=development
 FLASK_APP=goforbroca.app:create_app
-SECRET_KEY=changeme
 DATABASE_URI=postgresql://localhost:5432/goforbroca-development
 CELERY_BROKER_URL=redis://localhost:6379
 CELERY_RESULT_BACKEND_URL=redis://localhost:6379
+TWILIO_ACCOUNT_SID=${get from https://www.twilio.com/console}
+TWILIO_AUTH_TOKEN=${get from https://www.twilio.com/console}
+TWILIO_PHONE_NUMBER=${get from https://www.twilio.com/console}

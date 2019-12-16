@@ -21,6 +21,7 @@ def sm2(x: List[int], alpha: float = 6.0, beta: float = -0.8, gamma: float = 0.2
     """
     assert all(0 <= x_i <= 5 for x_i in x)
     correct_x = [x_i >= 3 for x_i in x]
+
     # If you got the last question incorrect, just return 1
     if not correct_x[-1]:
         return 1.0
@@ -28,10 +29,9 @@ def sm2(x: List[int], alpha: float = 6.0, beta: float = -0.8, gamma: float = 0.2
     # Calculate the latest consecutive answer streak
     num_consecutively_correct = 0
     for correct in reversed(correct_x):
-        if correct:
-            num_consecutively_correct += 1
-        else:
+        if not correct:
             break
+        num_consecutively_correct += 1
 
     weighted_history_sum = sum(beta + gamma * x_i + delta * x_i * x_i for x_i in x)
     return alpha * (max(1.3, 2.5 + weighted_history_sum)) ** (theta * num_consecutively_correct)
