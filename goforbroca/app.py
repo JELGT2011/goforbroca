@@ -32,8 +32,11 @@ def configure_extensions(app, cli):
 def register_blueprints(app):
     """register all blueprints for application
     """
-    from goforbroca.api.sms import sms
-    app.register_blueprint(sms)
+    from goforbroca.api.sms import sms_blueprint
+    from goforbroca.api.user import user_blueprint
+
+    app.register_blueprint(sms_blueprint)
+    app.register_blueprint(user_blueprint)
 
 
 def init_celery(app=None):

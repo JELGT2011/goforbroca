@@ -11,7 +11,7 @@ from goforbroca.models.flashcard import Flashcard
 from goforbroca.models.repetition import Repetition
 from goforbroca.models.user import User
 
-sms = Blueprint('sms', __name__, url_prefix='/api/sms')
+sms_blueprint = Blueprint('sms', __name__, url_prefix='/api/sms')
 
 enroll_regex = re.compile(r'enroll ?(\d*)')
 normalized_levenshtein = NormalizedLevenshtein()
@@ -62,7 +62,7 @@ def handle_study(repetition: Repetition, message_body: str) -> str:
     return f'good job, the answer was: {flashcard.back}'
 
 
-@sms.route('/', methods=['POST'])
+@sms_blueprint.route('/', methods=['POST'])
 def post() -> Response:
     message_body = request.form['Body']
     requester_phone_number = request.form['From']

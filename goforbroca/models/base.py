@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List
+from typing import List, Dict
 
 from sqlalchemy import func
 
@@ -42,3 +42,11 @@ class Base(db.Model):
     @classmethod
     def all(cls) -> List['Base']:
         return db.session.query(cls).all()
+
+    def to_json(self) -> Dict:
+        results = {
+            'id': self.id,
+            'created_at': str(self.created_at),
+            'updated_at': str(self.updated_at),
+        }
+        return results
