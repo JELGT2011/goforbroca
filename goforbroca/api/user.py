@@ -1,4 +1,4 @@
-from flask import Response, Blueprint, request, make_response
+from flask import Response, Blueprint, make_response
 
 from goforbroca.api.auth import wrap_google_auth_user
 from goforbroca.models.user import User
