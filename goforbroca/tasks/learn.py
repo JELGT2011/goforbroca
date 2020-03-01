@@ -1,16 +1,11 @@
 from textwrap import dedent
 
-from twilio.rest import Client
-
-from goforbroca import config
 from goforbroca.extensions import celery, db
 from goforbroca.models.deck import UserDeck
 from goforbroca.models.flashcard import Flashcard
 from goforbroca.models.repetition import Repetition
 from goforbroca.models.user import User
 from goforbroca.tasks.review import review
-
-client = Client(config.TWILIO_ACCOUNT_SID, config.TWILIO_AUTH_TOKEN)
 
 
 @celery.task
@@ -51,10 +46,12 @@ def learn():
             let's check back on this soon!
         """
         message = dedent(message)
-        client.messages.create(
-            body=message,
-            from_=config.TWILIO_PHONE_NUMBER,
-            to=user.phone_number,
-        )
+
+        # TODO
+        # client.messages.create(
+        #     body=message,
+        #     from_=config.TWILIO_PHONE_NUMBER,
+        #     to=user.phone_number,
+        # )
 
     return True
