@@ -1,3 +1,28 @@
+### API
+
+```bash
+export GOOGLE_AUTH_TOKEN=...
+```
+
+```bash
+# create user
+curl "localhost:5000/api/users/" \
+    --request "POST" \
+    --header "content-type: application/json" \
+    --header "accept: application/json" \
+    --header "authorization: bearer ${GOOGLE_AUTH_TOKEN}" \
+        | jq '.'
+
+# get user
+curl "localhost:5000/api/users/" \
+    --request "GET" \
+    --header "content-type: application/json" \
+    --header "accept: application/json" \
+    --header "authorization: bearer ${GOOGLE_AUTH_TOKEN}" \
+        | jq '.'
+
+```
+
 ### Installation
 
 ```bash
