@@ -48,7 +48,7 @@ def init_celery(app=None):
         'learn-every-day': {
             'task': 'tasks.learn',
             'schedule': crontab(minute=0, hour=12),
-        }
+        },
     }
 
     class ContextTask(celery.Task):
