@@ -46,10 +46,9 @@ def get_user_decks(user: User) -> Response:
     return make_response({'decks': user_decks_schema.dump(decks).data}, 200)
 
 
-@deck_blueprint.route('/standard/fork', methods=['POST'])
+@deck_blueprint.route('/standard/<standard_deck_id>/fork', methods=['POST'])
 @wrap_authenticated_user
-def fork_standard_deck(user: User) -> Response:
-    standard_deck_id = request.json['standard_deck_id']
+def fork_standard_deck(user: User, standard_deck_id: int) -> Response:
     standard_deck = StandardDeck.query.get(standard_deck_id)
     user_deck = UserDeck.query.filter_by(user_id=user.id, standard_deck_id=standard_deck.id).scalar()
     if user_deck:
@@ -69,4 +68,17 @@ def fork_standard_deck(user: User) -> Response:
 def create_user_deck(user: User) -> Response:
     name = request.json['name']
     user_deck = UserDeck.create(name=name, standard_deck_id=None, user_id=user.id, active=True)
+    return make_response({'deck': user_deck_schema.dump(user_deck).data}, 200)
+
+
+@deck_blueprint.route('/user/<user_deck_id>', methods=['DELETE'])
+@wrap_authenticated_user
+def delete_user_deck(user: User, user_deck_id: int) -> Response:
+    user_deck = UserDeck.query.filter_by(id=user_deck_id).scalar()
+    if not user_deck:
+        return make_response({'msg': 'user deck not found'}, 404)
+
+    db.session.delete(user_deck)
+    db.session.commit()
+
     return make_response({'deck': user_deck_schema.dump(user_deck).data}, 200)

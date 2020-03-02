@@ -28,8 +28,9 @@ curl "{HOST}/api/users/" \
 # Deck
 get standard decks: `GET /api/decks/standard`
 get user decks: `GET /api/decks/user`
-fork standard deck: `POST /api/decks/standard/fork` `{"standard_deck_id": Integer}`
+fork standard deck: `POST /api/decks/standard/<standard_deck_id>/fork`
 create user deck: `POST /api/decks/user` `{"name": String}`
+delete user deck: `DELETE /api/decks/user/<user_deck_id>`
 ```
 
 ### Installation
@@ -93,4 +94,10 @@ Or use the celery extension
 from goforbroca.extensions import celery
 celery.send_task('goforbroca.tasks.example.dummy_task').get()
 'OK'
+```
+
+## Heroku
+
+```bash
+heroku run bash --app=goforbroca-backend
 ```
