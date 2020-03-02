@@ -4,6 +4,7 @@
 export GOOGLE_AUTH_TOKEN=...
 ```
 
+User operations
 ```bash
 # create user
 curl "localhost:5000/api/users/" \
@@ -20,7 +21,14 @@ curl "localhost:5000/api/users/" \
     --header "accept: application/json" \
     --header "authorization: bearer ${GOOGLE_AUTH_TOKEN}" \
         | jq '.'
+```
 
+```bash
+# Deck
+get standard decks: `GET /api/decks/standard`
+get user decks: `GET /api/decks/user`
+fork standard deck: `POST /api/decks/standard/fork` `{"standard_deck_id": Integer}`
+create user deck: `POST /api/decks/user` `{"name": String}`
 ```
 
 ### Installation

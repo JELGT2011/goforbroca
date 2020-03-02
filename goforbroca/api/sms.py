@@ -6,39 +6,17 @@ from strsimpy import NormalizedLevenshtein
 from twilio.twiml.messaging_response import MessagingResponse
 
 from goforbroca.extensions import db
-from goforbroca.models.deck import StandardDeck, UserDeck
 from goforbroca.models.flashcard import Flashcard
 from goforbroca.models.repetition import Repetition
 from goforbroca.models.user import User
 
 sms_blueprint = Blueprint('sms', __name__, url_prefix='/api/sms')
 
-enroll_regex = re.compile(r'enroll ?(\d*)')
 normalized_levenshtein = NormalizedLevenshtein()
 
 
 def handle_help() -> str:
     return '\n'.join({'help', 'enroll', 'study'})
-
-
-def handle_enroll(user: User, standard_deck_id: str) -> str:
-    if not standard_deck_id:
-        # list all decks
-        standard_decks = db.session.query(StandardDeck).all()
-        return '\n'.join([f'{deck.id}: {deck.name}' for deck in standard_decks])
-
-    standard_deck = db.session.query(StandardDeck).get(standard_deck_id)
-    user_deck = db.session.query(UserDeck).filter_by(user_id=user.id, standard_deck_id=standard_deck.id).scalar()
-    if user_deck:
-        return f'you are already enrolled in {user_deck.name}'
-    else:
-        user_deck = UserDeck.create(
-            name=standard_deck.name,
-            standard_deck_id=standard_deck.id,
-            user_id=user.id,
-            active=True,
-        )
-        return f'you have successfully enrolled in {user_deck.name}'
 
 
 # TODO: tune this score calculation to understand time spent, and iteration number
@@ -71,13 +49,6 @@ def post() -> str:
     user = db.session.query(User).filter_by(phone_number=requester_phone_number).scalar()
     if not user:
         user = User.create(phone_number=requester_phone_number)
-
-    match = enroll_regex.fullmatch(message_body)
-    if match:
-        standard_deck_id = match.groups()[0]
-        response_message = handle_enroll(user, standard_deck_id)
-        response.message(response_message)
-        return str(response)
 
     active_repetition = db.session.query(Repetition).filter_by(user_id=user.id, active=True).scalar()
     if active_repetition:

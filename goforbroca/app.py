@@ -32,10 +32,10 @@ def configure_extensions(app, cli):
 def register_blueprints(app):
     """register all blueprints for application
     """
-    from goforbroca.api.sms import sms_blueprint
+    from goforbroca.api.deck import deck_blueprint
     from goforbroca.api.user import user_blueprint
 
-    app.register_blueprint(sms_blueprint)
+    app.register_blueprint(deck_blueprint)
     app.register_blueprint(user_blueprint)
 
 
