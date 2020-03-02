@@ -21,6 +21,8 @@ standard_decks_schema = StandardDeckSchema(many=True)
 
 class UserDeckSchema(ma.ModelSchema):
 
+    standard_deck_id = ma.Int(dump_only=True)
+
     class Meta:
         model = UserDeck
         sqla_session = db.session
