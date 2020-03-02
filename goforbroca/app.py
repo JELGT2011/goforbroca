@@ -1,6 +1,8 @@
 from celery.schedules import crontab
 from flask import Flask
+from flask_cors import CORS
 
+from goforbroca.config import DEBUG, HOST
 from goforbroca.extensions import db, migrate, celery
 
 
@@ -13,11 +15,20 @@ def create_app(testing=False, cli=False):
     if testing is True:
         app.config['TESTING'] = True
 
+    configure_cors(app)
     configure_extensions(app, cli)
     register_blueprints(app)
     init_celery(app)
 
     return app
+
+
+def configure_cors(app):
+    if DEBUG:
+        cors = CORS(app, origin='*')
+    else:
+        cors = CORS(app, origin=HOST)
+    return cors
 
 
 def configure_extensions(app, cli):

@@ -3,6 +3,8 @@ import os
 ENV = os.environ['FLASK_ENV']
 DEBUG = ENV == 'development'
 
+HOST = os.environ['HOST']
+
 SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URI']
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 

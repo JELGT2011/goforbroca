@@ -1,3 +1,4 @@
+HOST=localhost
 FLASK_ENV=development
 FLASK_APP=goforbroca.app:create_app
 DATABASE_URI=postgresql://localhost:5432/goforbroca-development
