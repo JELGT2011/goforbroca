@@ -52,7 +52,7 @@ def get_user_decks(user: User) -> Response:
 def fork_standard_deck(user: User, standard_deck_id: int) -> Response:
     standard_deck = StandardDeck.query.get(standard_deck_id)
     user_deck = UserDeck.query.filter_by(user_id=user.id, standard_deck_id=standard_deck.id).scalar()
-    if user_deck:
+    if user_deck is not None:
         return make_response({'msg': 'deck has already been forked'}, 400)
 
     user_deck = UserDeck.create(
@@ -90,7 +90,7 @@ def create_user_deck(user: User) -> Response:
 @deck_blueprint.route('/user/<user_deck_id>', methods=['PUT'])
 @wrap_authenticated_user
 def update_user_deck(user: User, user_deck_id: int) -> Response:
-    user_deck = UserDeck.query.filter_by(id=user_deck_id).scalar()
+    user_deck = UserDeck.query.filter_by(id=user_deck_id, user_id=user.id).scalar()
     if not user_deck:
         return make_response({'msg': 'user deck not found'}, 404)
 
@@ -104,7 +104,7 @@ def update_user_deck(user: User, user_deck_id: int) -> Response:
 @deck_blueprint.route('/user/<user_deck_id>', methods=['DELETE'])
 @wrap_authenticated_user
 def delete_user_deck(user: User, user_deck_id: int) -> Response:
-    user_deck = UserDeck.query.filter_by(id=user_deck_id).scalar()
+    user_deck = UserDeck.query.filter_by(id=user_deck_id, user_id=user.id).scalar()
     if not user_deck:
         return make_response({'msg': 'user deck not found'}, 404)
 
