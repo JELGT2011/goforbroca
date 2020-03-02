@@ -1,13 +1,14 @@
 ### API
 
 ```bash
+export HOST=https://goforbroca-backend.herokuapp.com
 export GOOGLE_AUTH_TOKEN=...
 ```
 
 User operations
 ```bash
 # create user
-curl "localhost:5000/api/users/" \
+curl "{HOST}/api/users/" \
     --request "POST" \
     --header "content-type: application/json" \
     --header "accept: application/json" \
@@ -15,7 +16,7 @@ curl "localhost:5000/api/users/" \
         | jq '.'
 
 # get user
-curl "localhost:5000/api/users/" \
+curl "{HOST}/api/users/" \
     --request "GET" \
     --header "content-type: application/json" \
     --header "accept: application/json" \
