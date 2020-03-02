@@ -33,7 +33,6 @@ create user deck: `POST /api/decks/user` `{"name": String, "active": Optional[Bo
 update user deck: `PUT /api/decks/user/<user_deck_id>` `{"name": Optional[String], "active": Optional[Boolean]}`
 delete user deck: `DELETE /api/decks/user/<user_deck_id>`
 
-## TODO
 # learn
 get new card: `GET /api/learn`
 

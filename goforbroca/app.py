@@ -36,6 +36,7 @@ def register_blueprints(app):
     from goforbroca.api.review import review_blueprint
     from goforbroca.api.user import user_blueprint
 
+    app.url_map.strict_slashes = False
     app.register_blueprint(deck_blueprint)
     app.register_blueprint(review_blueprint)
     app.register_blueprint(user_blueprint)

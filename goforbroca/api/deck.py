@@ -33,21 +33,21 @@ user_deck_schema = UserDeckSchema()
 user_decks_schema = UserDeckSchema(many=True)
 
 
-@deck_blueprint.route('/standard/', methods=['GET'])
+@deck_blueprint.route('/standard', methods=['GET'])
 @wrap_authenticated_user
 def get_standard_decks(user: User) -> Response:
     decks = StandardDeck.query.all()
     return make_response({'decks': standard_decks_schema.dump(decks).data}, 200)
 
 
-@deck_blueprint.route('/user/', methods=['GET'])
+@deck_blueprint.route('/user', methods=['GET'])
 @wrap_authenticated_user
 def get_user_decks(user: User) -> Response:
     decks = UserDeck.query.filter_by(user_id=user.id)
     return make_response({'decks': user_decks_schema.dump(decks).data}, 200)
 
 
-@deck_blueprint.route('/standard/<standard_deck_id>/fork/', methods=['POST'])
+@deck_blueprint.route('/standard/<standard_deck_id>/fork', methods=['POST'])
 @wrap_authenticated_user
 def fork_standard_deck(user: User, standard_deck_id: int) -> Response:
     standard_deck = StandardDeck.query.get(standard_deck_id)
@@ -78,7 +78,7 @@ def fork_standard_deck(user: User, standard_deck_id: int) -> Response:
     return make_response({'deck': user_deck_schema.dump(user_deck).data}, 200)
 
 
-@deck_blueprint.route('/user/', methods=['POST'])
+@deck_blueprint.route('/user', methods=['POST'])
 @wrap_authenticated_user
 def create_user_deck(user: User) -> Response:
     name = request.json['name']
@@ -87,7 +87,7 @@ def create_user_deck(user: User) -> Response:
     return make_response({'deck': user_deck_schema.dump(user_deck).data}, 200)
 
 
-@deck_blueprint.route('/user/<user_deck_id>/', methods=['PUT'])
+@deck_blueprint.route('/user/<user_deck_id>', methods=['PUT'])
 @wrap_authenticated_user
 def update_user_deck(user: User, user_deck_id: int) -> Response:
     user_deck = UserDeck.query.filter_by(id=user_deck_id, user_id=user.id).scalar()
@@ -101,7 +101,7 @@ def update_user_deck(user: User, user_deck_id: int) -> Response:
     return make_response({'deck': user_deck_schema.dump(user_deck).data}, 200)
 
 
-@deck_blueprint.route('/user/<user_deck_id>/', methods=['DELETE'])
+@deck_blueprint.route('/user/<user_deck_id>', methods=['DELETE'])
 @wrap_authenticated_user
 def delete_user_deck(user: User, user_deck_id: int) -> Response:
     user_deck = UserDeck.query.filter_by(id=user_deck_id, user_id=user.id).scalar()
