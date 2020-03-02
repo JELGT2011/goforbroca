@@ -25,7 +25,7 @@ curl "{HOST}/api/users/" \
 ```
 
 ```bash
-# Deck
+# deck
 get standard decks: `GET /api/decks/standard`
 get user decks: `GET /api/decks/user`
 fork standard deck: `POST /api/decks/standard/<standard_deck_id>/fork`
@@ -33,9 +33,7 @@ create user deck: `POST /api/decks/user` `{"name": String, "active": Optional[Bo
 update user deck: `PUT /api/decks/user/<user_deck_id>` `{"name": Optional[String], "active": Optional[Boolean]}`
 delete user deck: `DELETE /api/decks/user/<user_deck_id>`
 
-
-# TODO
-
+## TODO
 # learn
 get new card: `GET /api/learn`
 
