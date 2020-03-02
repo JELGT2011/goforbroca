@@ -42,7 +42,9 @@ def seed_1000mostcommonwords_com():
     for common_words_file in glob('data/1000mostcommonwords.com/*.csv'):
         base_name = common_words_file.split('/')[-1]
         language_name = base_name.split('.')[0]
-        standard_deck = StandardDeck.create(name=f'1000mostcommonwords.com {language_name}')
+        deck_name = f'1000mostcommonwords.com {language_name}'
+        click.echo(f"\tseeding {deck_name}")
+        standard_deck = StandardDeck.create(name=deck_name)
         with open(common_words_file) as common_words_csv:
             for line in common_words_csv:
                 rank, front, back = line.strip().split(',')
