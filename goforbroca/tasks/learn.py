@@ -1,6 +1,6 @@
 from textwrap import dedent
 
-from goforbroca.extensions import celery, db
+from goforbroca.extensions import celery
 from goforbroca.models.deck import UserDeck
 from goforbroca.models.flashcard import Flashcard
 from goforbroca.models.repetition import Repetition
@@ -12,24 +12,21 @@ from goforbroca.tasks.review import review
 def learn():
     user_decks = UserDeck.filter_by(active=True)
     for user_deck in user_decks:
-        user = db.session.query(User).get(user_deck.user_id)
-        last_repetition = (db.session.query(Repetition)
+        user = User.query.get(user_deck.user_id)
+        last_repetition = (Repetition.query
                            .filter_by(user_deck_id=user_deck.id)
                            .order_by(Repetition.completed_at.desc())
                            .scalar())
         if not last_repetition:
             # get lowest rank flashcard in the deck
-            flashcard = (db.session.query(Flashcard)
-                         .filter_by(deck_id=user_deck.id)
-                         .order_by(Flashcard.rank.asc())
-                         .scalar())
+            flashcard = Flashcard.query.filter_by(deck_id=user_deck.id).order_by(Flashcard.rank.asc()).scalar()
             if not flashcard:
                 # user is done with this deck
                 user_deck.active = False
                 user_deck.save()
                 continue
         else:
-            flashcard = db.session.query(Flashcard).get(last_repetition.flashcard_id)
+            flashcard = Flashcard.query.get(last_repetition.flashcard_id)
 
         new_repetition = Repetition.create(
             user_id=user.id,
@@ -50,7 +47,6 @@ def learn():
         # TODO
         # client.messages.create(
         #     body=message,
-        #     from_=config.TWILIO_PHONE_NUMBER,
         #     to=user.phone_number,
         # )
 

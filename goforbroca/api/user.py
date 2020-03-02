@@ -25,7 +25,7 @@ def post(google_id: str) -> Response:
         return make_response({'msg': 'user already exists'}, 400)
 
     user = User.create(google_id=google_id)
-    return make_response({'user': user_schema.dump(user).data}, 201)
+    return make_response({'user': user_schema.dump(user).data}, 200)
 
 
 @user_blueprint.route('/', methods=['GET'])

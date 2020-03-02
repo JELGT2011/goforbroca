@@ -25,4 +25,4 @@ def upgrade():
 def downgrade():
     op.drop_index(op.f('ix_users_google_id'), table_name='users')
     op.drop_column('users', 'google_id')
-    sa.Column('phone_number', sa.String(length=16), nullable=False)
+    op.add_column('users', sa.Column('phone_number', sa.String(length=16), nullable=False))

@@ -46,6 +46,7 @@ def seed_1000mostcommonwords_com():
 def seed_1000mostcommonwords_com_file(common_words_file):
     from goforbroca.models.deck import StandardDeck
     from goforbroca.models.flashcard import Flashcard
+    from goforbroca.extensions import db
 
     base_name = common_words_file.split('/')[-1]
     language_name = base_name.split('.')[0]
@@ -55,9 +56,9 @@ def seed_1000mostcommonwords_com_file(common_words_file):
     with open(common_words_file) as common_words_csv:
         for line in common_words_csv:
             rank, front, back = line.strip().split(',')
-            rank = int(rank)
-            Flashcard.create(standard_deck_id=standard_deck.id, front=front, back=back, rank=rank)
-            Flashcard.create(standard_deck_id=standard_deck.id, front=back, back=front, rank=rank)
+            db.session.add(Flashcard(standard_deck_id=standard_deck.id, front=front, back=back, rank=rank))
+            db.session.add(Flashcard(standard_deck_id=standard_deck.id, front=back, back=front, rank=rank))
+        db.session.commit()
 
 
 if __name__ == "__main__":

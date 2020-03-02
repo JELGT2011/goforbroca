@@ -3,6 +3,7 @@ from flask import Blueprint, Response, make_response, request
 from goforbroca.api.auth import wrap_authenticated_user
 from goforbroca.extensions import db, ma
 from goforbroca.models.deck import StandardDeck, UserDeck
+from goforbroca.models.flashcard import Flashcard
 from goforbroca.models.user import User
 
 deck_blueprint = Blueprint('deck', __name__, url_prefix='/api/decks')
@@ -60,14 +61,43 @@ def fork_standard_deck(user: User, standard_deck_id: int) -> Response:
         user_id=user.id,
         active=True,
     )
-    return make_response({'decks': user_deck_schema.dump(user_deck).data}, 200)
+
+    standard_deck_flashcards = Flashcard.query.filter_by(standard_deck_id=standard_deck_id)
+    for flashcard in standard_deck_flashcards:
+        db.session.add(
+            Flashcard(
+                standard_deck_id=None,
+                user_deck_id=user_deck.id,
+                front=flashcard.front,
+                back=flashcard.back,
+                rank=flashcard.rank,
+            )
+        )
+    db.session.commit()
+
+    return make_response({'deck': user_deck_schema.dump(user_deck).data}, 200)
 
 
 @deck_blueprint.route('/user/', methods=['POST'])
 @wrap_authenticated_user
 def create_user_deck(user: User) -> Response:
     name = request.json['name']
-    user_deck = UserDeck.create(name=name, standard_deck_id=None, user_id=user.id, active=True)
+    active = request.json.get('active', True)
+    user_deck = UserDeck.create(name=name, standard_deck_id=None, user_id=user.id, active=active)
+    return make_response({'deck': user_deck_schema.dump(user_deck).data}, 200)
+
+
+@deck_blueprint.route('/user/<user_deck_id>', methods=['PUT'])
+@wrap_authenticated_user
+def update_user_deck(user: User, user_deck_id: int) -> Response:
+    user_deck = UserDeck.query.filter_by(id=user_deck_id).scalar()
+    if not user_deck:
+        return make_response({'msg': 'user deck not found'}, 404)
+
+    user_deck.name = request.json.get('name', user_deck.name)
+    user_deck.active = request.json.get('active', user_deck.active)
+    user_deck.save()
+
     return make_response({'deck': user_deck_schema.dump(user_deck).data}, 200)
 
 

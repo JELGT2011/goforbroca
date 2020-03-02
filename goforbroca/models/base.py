@@ -23,16 +23,6 @@ class Base(db.Model):
         db.session.commit()
         return model
 
-    @classmethod
-    def bulk_create(cls, data) -> List['Base']:
-        models = list()
-        for datum in data:
-            model = cls(**datum)
-            models.append(model)
-            db.session.add(model)
-        db.session.commit()
-        return models
-
     def save(self) -> 'Base':
         self.updated_at = datetime.utcnow()
         db.session.add(self)

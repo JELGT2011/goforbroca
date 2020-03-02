@@ -29,8 +29,21 @@ curl "{HOST}/api/users/" \
 get standard decks: `GET /api/decks/standard`
 get user decks: `GET /api/decks/user`
 fork standard deck: `POST /api/decks/standard/<standard_deck_id>/fork`
-create user deck: `POST /api/decks/user` `{"name": String}`
+create user deck: `POST /api/decks/user` `{"name": String, "active": Optional[Boolean] = True}`
+update user deck: `PUT /api/decks/user/<user_deck_id>` `{"name": Optional[String], "active": Optional[Boolean]}`
 delete user deck: `DELETE /api/decks/user/<user_deck_id>`
+
+
+# TODO
+
+# learn
+get new card: `GET /api/learn`
+
+# review
+get review card: `GET /api/review`
+
+
+submit answer: `POST /api/review/`
 ```
 
 ### Installation
