@@ -1,4 +1,4 @@
-### API
+## API
 
 ```bash
 export HOST=https://goforbroca-backend.herokuapp.com
@@ -24,8 +24,7 @@ curl "{HOST}/api/users/" \
         | jq '.'
 ```
 
-```bash
-# deck
+Deck
 get standard decks: `GET /api/decks/standard`
 get user decks: `GET /api/decks/user`
 fork standard deck: `POST /api/decks/standard/<standard_deck_id>/fork`
@@ -33,15 +32,13 @@ create user deck: `POST /api/decks/user` `{"name": String, "active": Optional[Bo
 update user deck: `PUT /api/decks/user/<user_deck_id>` `{"name": Optional[String], "active": Optional[Boolean]}`
 delete user deck: `DELETE /api/decks/user/<user_deck_id>`
 
-# learn
+Learn
 get new card: `GET /api/learn`
 
-# review
+Review
 get review card: `GET /api/review`
-
-
 submit answer: `POST /api/review/`
-```
+
 
 ### Installation
 
@@ -61,7 +58,7 @@ To list all commands:
 goforbroca --help
 ```
 
-### Configuration
+## Configuration
 
 Configuration is handled by environment variables, for development purpose you just need to update/add entries in `.flaskenv` file.
 
@@ -81,13 +78,13 @@ pip install -r requirements-dev.txt
 gunicorn goforbroca.wsgi:app
 ```
 
-#### Running celery workers
+### Running celery workers
 
 ```bash
 celery worker -A goforbroca.celery_app:app --loglevel=info
 ```
 
-#### Running a task
+### Running a task
 
 To run a task you can either import it and call it
 

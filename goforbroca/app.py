@@ -10,6 +10,7 @@ def create_app(testing=False, cli=False):
     """Application factory, used to create application
     """
     app = Flask('goforbroca')
+    app.url_map.strict_slashes = False
     app.config.from_object('goforbroca.config')
 
     if testing is True:
