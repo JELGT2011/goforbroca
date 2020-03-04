@@ -1,7 +1,9 @@
 from flask import Response, Blueprint, make_response
 
 from goforbroca.api.auth import wrap_authenticated_user, wrap_google_user
+from goforbroca.api.deck import user_deck_schema
 from goforbroca.extensions import db, ma
+from goforbroca.models.deck import UserDeck
 from goforbroca.models.user import User
 
 user_blueprint = Blueprint('user', __name__, url_prefix='/api/users')
@@ -25,7 +27,10 @@ def post(google_id: str) -> Response:
         return make_response({'msg': 'user already exists'}, 400)
 
     user = User.create(google_id=google_id)
-    return make_response({'user': user_schema.dump(user).data}, 200)
+    user_deck = UserDeck.create_default_deck(user.id)
+    return make_response({
+        'user': user_schema.dump(user).data,
+        'user_deck': user_deck_schema.dump(user_deck).data}, 200)
 
 
 @user_blueprint.route('/', methods=['GET'])
