@@ -10,6 +10,7 @@ class StandardDeck(Base):
     __tablename__ = 'standard_decks'
 
     name = db.Column(db.String(256), nullable=False)
+    source = db.Column(db.String(256), nullable=True, index=True)
 
 
 class UserDeck(Base):
