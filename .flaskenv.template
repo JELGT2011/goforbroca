@@ -1,7 +1,7 @@
 HOST=localhost
 FLASK_ENV=development
 FLASK_APP=goforbroca.app:create_app
-DATABASE_URI=postgresql://localhost:5432/goforbroca-development
+DATABASE_URL=postgresql://localhost:5432/goforbroca-development
 CELERY_BROKER_URL=redis://localhost:6379
 CELERY_RESULT_BACKEND_URL=redis://localhost:6379
 GOOGLE_CLIENT_ID=...
