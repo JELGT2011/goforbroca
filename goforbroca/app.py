@@ -45,11 +45,13 @@ def register_blueprints(app):
     """register all blueprints for application
     """
     from goforbroca.api.deck import deck_blueprint
+    from goforbroca.api.learn import learn_blueprint
     from goforbroca.api.review import review_blueprint
     from goforbroca.api.user import user_blueprint
 
     app.url_map.strict_slashes = False
     app.register_blueprint(deck_blueprint)
+    app.register_blueprint(learn_blueprint)
     app.register_blueprint(review_blueprint)
     app.register_blueprint(user_blueprint)
 

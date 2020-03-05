@@ -12,3 +12,4 @@ class Flashcard(Base):
     front = db.Column(db.String(1024), nullable=False)
     back = db.Column(db.String(1024), nullable=False)
     rank = db.Column(db.Integer())
+    max_score = db.Column(db.Float(), nullable=True, default=0)

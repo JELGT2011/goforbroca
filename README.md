@@ -33,11 +33,11 @@ update user deck: `PUT /api/decks/user/<user_deck_id>` `{"name": Optional[String
 delete user deck: `DELETE /api/decks/user/<user_deck_id>`
 
 Learn
-get new card: `GET /api/learn`
+get new card: `POST /api/learn/` `{"user_deck_id": Int}`
 
 Review
 get review card: `GET /api/review`
-submit answer: `POST /api/review/`
+submit answer: `POST /api/review`
 
 
 ### Installation

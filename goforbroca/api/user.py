@@ -28,9 +28,7 @@ def post(google_id: str) -> Response:
 
     user = User.create(google_id=google_id)
     user_deck = UserDeck.create_default_deck(user.id)
-    return make_response({
-        'user': user_schema.dump(user).data,
-        'user_deck': user_deck_schema.dump(user_deck).data}, 200)
+    return make_response({'user': user_schema.dump(user).data, 'user_deck': user_deck_schema.dump(user_deck).data}, 200)
 
 
 @user_blueprint.route('/', methods=['GET'])
