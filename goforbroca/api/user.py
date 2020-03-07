@@ -1,4 +1,4 @@
-from flask import Response, Blueprint, make_response
+from flask import Response, Blueprint, make_response, request
 
 from goforbroca.api.auth import wrap_authenticated_user, wrap_google_user
 from goforbroca.api.deck import user_deck_schema
@@ -22,11 +22,15 @@ user_schema = UserSchema()
 @user_blueprint.route('/', methods=['POST'])
 @wrap_google_user
 def post(google_id: str) -> Response:
+    email_address = request.json.get('email')
+    if not email_address:
+        return make_response({'msg': 'email is required'}, 400)
+
     user = User.query.filter_by(google_id=google_id).scalar()
     if user is not None:
         return make_response({'msg': 'user already exists'}, 400)
 
-    user = User.create(google_id=google_id)
+    user = User.create(email_address=email_address, google_id=google_id)
     user_deck = UserDeck.create_default_deck(user.id)
     return make_response({'user': user_schema.dump(user).data, 'user_deck': user_deck_schema.dump(user_deck).data}, 200)
 
