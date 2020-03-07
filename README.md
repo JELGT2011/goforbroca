@@ -37,7 +37,7 @@ get new card: `POST /api/learn/` `{"user_deck_id": Int}`
 
 Review
 get review card: `GET /api/review`
-submit answer: `POST /api/review`
+submit answer: `POST /api/review` `{}`
 
 
 ### Installation

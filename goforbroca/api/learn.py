@@ -1,13 +1,11 @@
 from flask import Blueprint, Response, make_response, request
-from sqlalchemy import asc, or_
+from sqlalchemy import asc
 
 from goforbroca.api.auth import wrap_authenticated_user
 from goforbroca.extensions import ma, db
 from goforbroca.models.deck import UserDeck
 from goforbroca.models.flashcard import Flashcard
 from goforbroca.models.user import User
-
-min_learned_score = 0.9
 
 learn_blueprint = Blueprint('learn', __name__, url_prefix='/api/learn')
 
@@ -34,14 +32,14 @@ def get_new_card(user: User) -> Response:
 
         flashcard = (Flashcard.query
                      .filter(Flashcard.user_deck_id == user_deck_id)
-                     .filter(or_(Flashcard.max_score < min_learned_score, Flashcard.max_score.is_(None)))
+                     .filter(Flashcard.max_score.is_(None))
                      .order_by(asc(Flashcard.rank))
                      .limit(1)
                      .scalar())
     else:
         flashcard = (Flashcard.query
                      .filter(Flashcard.user_deck_id.in_(user_deck_ids))
-                     .filter(or_(Flashcard.max_score < min_learned_score, Flashcard.max_score.is_(None)))
+                     .filter(Flashcard.max_score.is_(None))
                      .order_by(asc(Flashcard.rank))
                      .limit(1)
                      .scalar())

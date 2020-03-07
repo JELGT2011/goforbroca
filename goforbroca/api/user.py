@@ -41,4 +41,3 @@ def get(user: User) -> Response:
 @wrap_authenticated_user
 def put(user: User) -> Response:
     raise NotImplementedError()
-    # return make_response({'user': user_schema.dump(user).data}, 200)
