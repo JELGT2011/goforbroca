@@ -4,12 +4,12 @@ from flask import Blueprint, Response, make_response, request
 from sqlalchemy import asc, or_
 from strsimpy import NormalizedLevenshtein
 
-from goforbroca.api.auth import wrap_authenticated_user
 from goforbroca.extensions import db, ma
 from goforbroca.models.deck import UserDeck
 from goforbroca.models.flashcard import Flashcard
 from goforbroca.models.repetition import Repetition
 from goforbroca.models.user import User
+from goforbroca.util.auth import wrap_authenticated_user
 
 min_learned_score = 0.95
 normalized_levenshtein = NormalizedLevenshtein()
@@ -25,6 +25,9 @@ def calculate_score(repetition: Repetition) -> float:
 
 class RepetitionSchema(ma.ModelSchema):
 
+    user_deck_id = ma.Int(dump_only=True)
+    flashcard_id = ma.Int(dump_only=True)
+
     class Meta:
         model = Repetition
         sqla_session = db.session
@@ -35,7 +38,7 @@ repetition_schema = RepetitionSchema()
 
 @repetition_blueprint.route('/', methods=['GET'])
 @wrap_authenticated_user
-def get_review_card(user: User) -> Response:
+def create_repetition(user: User) -> Response:
     user_deck_ids = {user_deck.id for user_deck in UserDeck.query.filter_by(user_id=user.id)}
 
     user_deck_id = request.json.get('user_deck_id')
@@ -45,18 +48,20 @@ def get_review_card(user: User) -> Response:
 
         flashcard = (Flashcard.query
                      .filter(Flashcard.user_deck_id == user_deck_id)
+                     .filter(Flashcard.viewed.is_(True))
                      .filter(or_(Flashcard.max_score < min_learned_score, Flashcard.max_score.is_(None)))
                      .order_by(asc(Flashcard.rank))
                      .limit(1).scalar())
     else:
         flashcard = (Flashcard.query
                      .filter(Flashcard.user_deck_id.in_(user_deck_ids))
+                     .filter(Flashcard.viewed.is_(True))
                      .filter(or_(Flashcard.max_score < min_learned_score, Flashcard.max_score.is_(None)))
                      .order_by(asc(Flashcard.rank))
                      .limit(1).scalar())
 
     if not flashcard:
-        return make_response({"msg": "no remaining flashcards to learn"}, 200)
+        return make_response({"msg": "no flashcards to review"}, 200)
 
     # TODO: find previous repetition if it exists (to calibrate and set iteration number)
     previous = Repetition.query.filter_by(flashcard_id=flashcard.id)
@@ -77,10 +82,9 @@ def get_review_card(user: User) -> Response:
     return make_response({"repetition": repetition_schema.dump(repetition).data}, 200)
 
 
-@repetition_blueprint.route('/', methods=['POST'])
+@repetition_blueprint.route('/<repetition_id>', methods=['POST'])
 @wrap_authenticated_user
-def submit_review_card(user: User) -> Response:
-    repetition_id = request.json['repetition_id']
+def submit_repetition_answer(user: User, repetition_id: int) -> Response:
     attempt = request.json['attempt']
 
     repetition = Repetition.query.filter_by(id=repetition_id, user_id=user.id, active=True).scalar()

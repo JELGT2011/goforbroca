@@ -8,6 +8,7 @@ from goforbroca.models.base import Base
 
 class RepetitionFormat(Enum):
     recognize = 'recognize'
+    retrieve = 'retrieve'
     recall = 'recall'
 
 
@@ -25,3 +26,6 @@ class Repetition(Base):
     attempt = db.Column(db.String(128), nullable=True)
     score = db.Column(db.Float(), nullable=True)
     completed_at = db.Column(db.DateTime(timezone=True))
+
+    def generate_prompt(self) -> 'Repetition':
+        raise NotImplementedError()

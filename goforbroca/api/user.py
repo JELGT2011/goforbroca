@@ -1,10 +1,10 @@
 from flask import Response, Blueprint, make_response, request
 
-from goforbroca.api.auth import wrap_authenticated_user, wrap_google_user
 from goforbroca.api.deck import user_deck_schema
 from goforbroca.extensions import db, ma
 from goforbroca.models.deck import UserDeck
 from goforbroca.models.user import User
+from goforbroca.util.auth import wrap_authenticated_user, wrap_google_user
 
 user_blueprint = Blueprint('user', __name__, url_prefix='/api/users')
 

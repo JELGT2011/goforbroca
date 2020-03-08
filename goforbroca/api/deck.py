@@ -1,10 +1,10 @@
 from flask import Blueprint, Response, make_response, request
 
-from goforbroca.api.auth import wrap_authenticated_user
 from goforbroca.extensions import db, ma
 from goforbroca.models.deck import StandardDeck, UserDeck
 from goforbroca.models.flashcard import Flashcard
 from goforbroca.models.user import User
+from goforbroca.util.auth import wrap_authenticated_user
 
 deck_blueprint = Blueprint('deck', __name__, url_prefix='/api/decks')
 
@@ -67,6 +67,7 @@ def fork_standard_deck(user: User, standard_deck_id: int) -> Response:
         Flashcard(
             standard_deck_id=None,
             user_deck_id=user_deck.id,
+            user_id=user.id,
             front=flashcard.front,
             back=flashcard.back,
             rank=flashcard.rank,
