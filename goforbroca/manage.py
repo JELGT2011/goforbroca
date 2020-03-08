@@ -57,7 +57,6 @@ def seed_1000mostcommonwords_com_file(common_words_file):
         for line in common_words_csv:
             rank, front, back = line.strip().split(',')
             db.session.add(Flashcard(standard_deck_id=standard_deck.id, front=front, back=back, rank=rank, max_score=0))
-            db.session.add(Flashcard(standard_deck_id=standard_deck.id, front=back, back=front, rank=rank, max_score=0))
         db.session.commit()
 
 

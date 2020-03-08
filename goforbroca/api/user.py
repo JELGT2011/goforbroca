@@ -22,9 +22,7 @@ user_schema = UserSchema()
 @user_blueprint.route('/', methods=['POST'])
 @wrap_google_user
 def post(google_id: str) -> Response:
-    email_address = request.json.get('email')
-    if not email_address:
-        return make_response({'msg': 'email is required'}, 400)
+    email_address = request.json['email']
 
     user = User.query.filter_by(google_id=google_id).scalar()
     if user is not None:

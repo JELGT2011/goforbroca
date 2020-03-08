@@ -1,5 +1,5 @@
 from flask import Blueprint, Response, make_response, request
-from sqlalchemy import asc
+from sqlalchemy import asc, or_
 
 from goforbroca.api.auth import wrap_authenticated_user
 from goforbroca.extensions import ma, db
@@ -32,19 +32,22 @@ def get_new_card(user: User) -> Response:
 
         flashcard = (Flashcard.query
                      .filter(Flashcard.user_deck_id == user_deck_id)
-                     .filter(Flashcard.max_score.is_(0))
+                     .filter(or_(Flashcard.viewed.is_(False), Flashcard.viewed.is_(None)))
                      .order_by(asc(Flashcard.rank))
                      .limit(1)
                      .scalar())
     else:
         flashcard = (Flashcard.query
                      .filter(Flashcard.user_deck_id.in_(user_deck_ids))
-                     .filter(Flashcard.max_score.is_(0))
+                     .filter(or_(Flashcard.viewed.is_(False), Flashcard.viewed.is_(None)))
                      .order_by(asc(Flashcard.rank))
                      .limit(1)
                      .scalar())
 
     if not flashcard:
         return make_response({"msg": "no remaining flashcards to learn"}, 200)
+
+    flashcard.viewed = True
+    flashcard.save()
 
     return make_response({"flashcard": flashcard_schema.dump(flashcard).data}, 200)
