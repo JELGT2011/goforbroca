@@ -71,6 +71,7 @@ def fork_standard_deck(user: User, standard_deck_id: int) -> Response:
                 front=flashcard.front,
                 back=flashcard.back,
                 rank=flashcard.rank,
+                max_score=0,
             )
         )
     db.session.commit()
@@ -108,6 +109,7 @@ def delete_user_deck(user: User, user_deck_id: int) -> Response:
     if not user_deck:
         return make_response({'msg': 'user deck not found'}, 404)
 
+    Flashcard.query.filter_by(user_deck_id=user_deck_id).delete()
     db.session.delete(user_deck)
     db.session.commit()
 

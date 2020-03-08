@@ -32,14 +32,14 @@ def get_new_card(user: User) -> Response:
 
         flashcard = (Flashcard.query
                      .filter(Flashcard.user_deck_id == user_deck_id)
-                     .filter(Flashcard.max_score.is_(None))
+                     .filter(Flashcard.max_score.is_(0))
                      .order_by(asc(Flashcard.rank))
                      .limit(1)
                      .scalar())
     else:
         flashcard = (Flashcard.query
                      .filter(Flashcard.user_deck_id.in_(user_deck_ids))
-                     .filter(Flashcard.max_score.is_(None))
+                     .filter(Flashcard.max_score.is_(0))
                      .order_by(asc(Flashcard.rank))
                      .limit(1)
                      .scalar())
