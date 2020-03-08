@@ -63,17 +63,18 @@ def fork_standard_deck(user: User, standard_deck_id: int) -> Response:
     )
 
     standard_deck_flashcards = Flashcard.query.filter_by(standard_deck_id=standard_deck_id)
-    for flashcard in standard_deck_flashcards:
-        db.session.add(
-            Flashcard(
-                standard_deck_id=None,
-                user_deck_id=user_deck.id,
-                front=flashcard.front,
-                back=flashcard.back,
-                rank=flashcard.rank,
-                max_score=0,
-            )
+    flashcards = [
+        Flashcard(
+            standard_deck_id=None,
+            user_deck_id=user_deck.id,
+            front=flashcard.front,
+            back=flashcard.back,
+            rank=flashcard.rank,
+            viewed=False,
         )
+        for flashcard in standard_deck_flashcards
+    ]
+    db.session.bulk_save_objects(flashcards)
     db.session.commit()
 
     return make_response({'deck': user_deck_schema.dump(user_deck).data}, 200)

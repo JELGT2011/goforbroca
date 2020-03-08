@@ -55,10 +55,12 @@ def upgrade():
         sa.Column('updated_at', sa.DateTime(timezone=True), nullable=True),
         sa.Column('standard_deck_id', sa.Integer(), sa.ForeignKey('standard_decks.id'), nullable=True),
         sa.Column('user_deck_id', sa.Integer(), sa.ForeignKey('user_decks.id'), nullable=True),
+        sa.Column('user_id', sa.Integer(), sa.ForeignKey('users.id'), nullable=True),
         sa.Column('front', sa.String(1024), nullable=False),
         sa.Column('back', sa.String(1024), nullable=False),
         sa.Column('rank', sa.Integer(), nullable=True),
-        sa.Column('max_score', sa.Float(), nullable=False),
+        sa.Column('viewed', sa.Boolean(), nullable=True),
+        sa.Column('progress', sa.Float(), nullable=True),
     )
 
     op.create_table(

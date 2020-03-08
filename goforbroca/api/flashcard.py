@@ -7,7 +7,7 @@ from goforbroca.models.deck import UserDeck
 from goforbroca.models.flashcard import Flashcard
 from goforbroca.models.user import User
 
-learn_blueprint = Blueprint('learn', __name__, url_prefix='/api/learn')
+flashcard_blueprint = Blueprint('flashcards', __name__, url_prefix='/api/flashcards')
 
 
 class FlashcardSchema(ma.ModelSchema):
@@ -20,10 +20,10 @@ class FlashcardSchema(ma.ModelSchema):
 flashcard_schema = FlashcardSchema()
 
 
-@learn_blueprint.route('/', methods=['POST'])
+@flashcard_blueprint.route('/view', methods=['POST'])
 @wrap_authenticated_user
-def get_new_card(user: User) -> Response:
-    user_deck_ids = {user_deck.id for user_deck in UserDeck.query.filter_by(user_id=user.id)}
+def view_new_card(user: User) -> Response:
+    user_deck_ids = {user_deck.id for user_deck in UserDeck.query.filter_by(user_id=user.id, active=True)}
 
     user_deck_id = request.json.get('user_deck_id')
     if user_deck_id:
@@ -50,4 +50,15 @@ def get_new_card(user: User) -> Response:
     flashcard.viewed = True
     flashcard.save()
 
+    return make_response({"flashcard": flashcard_schema.dump(flashcard).data}, 200)
+
+
+@flashcard_blueprint.route('/<flashcard_id>', methods=['DELETE'])
+@wrap_authenticated_user
+def delete_card(user: User, flashcard_id: int):
+    flashcard = Flashcard.query.filter_by(id=flashcard_id, user_id=user.id).scalar()
+    if not flashcard:
+        return make_response({"msg": "flashcard not found"}, 404)
+
+    flashcard.delete()
     return make_response({"flashcard": flashcard_schema.dump(flashcard).data}, 200)

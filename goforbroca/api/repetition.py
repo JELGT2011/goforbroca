@@ -14,7 +14,7 @@ from goforbroca.models.user import User
 min_learned_score = 0.95
 normalized_levenshtein = NormalizedLevenshtein()
 
-review_blueprint = Blueprint('review', __name__, url_prefix='/api/review')
+repetition_blueprint = Blueprint('repetition', __name__, url_prefix='/api/repetitions')
 
 
 # TODO: tune this score calculation to understand time spent, and iteration number
@@ -33,7 +33,7 @@ class RepetitionSchema(ma.ModelSchema):
 repetition_schema = RepetitionSchema()
 
 
-@review_blueprint.route('/', methods=['GET'])
+@repetition_blueprint.route('/', methods=['GET'])
 @wrap_authenticated_user
 def get_review_card(user: User) -> Response:
     user_deck_ids = {user_deck.id for user_deck in UserDeck.query.filter_by(user_id=user.id)}
@@ -77,7 +77,7 @@ def get_review_card(user: User) -> Response:
     return make_response({"repetition": repetition_schema.dump(repetition).data}, 200)
 
 
-@review_blueprint.route('/', methods=['POST'])
+@repetition_blueprint.route('/', methods=['POST'])
 @wrap_authenticated_user
 def submit_review_card(user: User) -> Response:
     repetition_id = request.json['repetition_id']
