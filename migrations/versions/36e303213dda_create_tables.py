@@ -9,8 +9,6 @@ from alembic import op
 import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
-from goforbroca.models.repetition import RepetitionFormat
-
 revision = '36e303213dda'
 down_revision = None
 branch_labels = None
@@ -73,18 +71,14 @@ def upgrade():
         sa.Column('flashcard_id', sa.Integer(), sa.ForeignKey('flashcards.id'), nullable=False),
         sa.Column('iteration', sa.Integer(), nullable=False),
         sa.Column('active', sa.Boolean(), nullable=False),
-        sa.Column('format', sa.Enum(RepetitionFormat), nullable=False),
-        sa.Column('prompt', sa.JSON(), nullable=False),
-        sa.Column('answer', sa.String(128), nullable=False),
-        sa.Column('attempt', sa.String(128), nullable=True),
-        sa.Column('score', sa.Float(), nullable=True),
+        sa.Column('score', sa.Integer(), nullable=True),
         sa.Column('completed_at', sa.DateTime(timezone=True), nullable=True),
     )
 
 
 def downgrade():
-    op.drop_table('users')
-    op.drop_table('standard_decks')
-    op.drop_table('user_decks')
-    op.drop_table('flashcards')
     op.drop_table('repetitions')
+    op.drop_table('flashcards')
+    op.drop_table('user_decks')
+    op.drop_table('standard_decks')
+    op.drop_table('users')

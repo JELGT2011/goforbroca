@@ -113,14 +113,11 @@ def delete_card(user: User, flashcard_id: int):
     return make_response({"flashcard": flashcard_schema.dump(flashcard).data}, 200)
 
 
-# TODO: don't always get the highest ranking flashcard
-#   use last_viewed, progress, etc to determine next flashcard
 @flashcard_blueprint.route('/view', methods=['POST'])
 @wrap_authenticated_user
 def view_new_card(user: User) -> Response:
-    user_deck_ids = {user_deck.id for user_deck in UserDeck.query.filter_by(user_id=user.id, active=True)}
-
     user_deck_id = request.json.get('user_deck_id')
+    user_deck_ids = {user_deck.id for user_deck in UserDeck.query.filter_by(user_id=user.id, active=True)}
     if user_deck_id:
         if user_deck_id not in user_deck_ids:
             return make_response({"msg": "invalid user_deck_id"}, 400)

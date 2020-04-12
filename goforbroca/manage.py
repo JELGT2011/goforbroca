@@ -43,6 +43,9 @@ def seed_1000mostcommonwords_com():
     click.echo("done seeding 1000mostcommonwords.com")
 
 
+# TODO: fix up the data for this
+#   1. some of the data is wrong
+#   2. add pronunciation, etc with google translate integration
 def seed_1000mostcommonwords_com_file(common_words_file):
     from goforbroca.models.deck import StandardDeck
     from goforbroca.models.flashcard import Flashcard

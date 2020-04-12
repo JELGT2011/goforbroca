@@ -34,7 +34,7 @@ view new card: `POST /api/flashcards/view` `{"user_deck_id": Optional[Int]}`
 ```
 Repetition
 create repetition: `POST /api/repetitions`
-submit repetition answer: `POST /api/repetitions/<repetition_id>` `{"answer": String}`
+submit repetition: `POST /api/repetitions/<repetition_id>` `{"score": Int}`
 ```
 
 ### Installation
