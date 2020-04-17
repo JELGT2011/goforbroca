@@ -55,7 +55,7 @@ def create_repetition(user: User) -> Response:
                      .limit(1).scalar())
 
     if not flashcard:
-        return make_response({"msg": "no flashcards to review"}, 200)
+        return make_response({"msg": "no flashcards to review (try forking a standard deck to get started)"}, 200)
 
     previous = Repetition.query.filter_by(user_id=user.id, flashcard_id=flashcard.id).all()
     if previous:
@@ -101,5 +101,7 @@ def submit_repetition_answer(user: User, repetition_id: int) -> Response:
     repetition.score = score
     repetition.completed_at = datetime.utcnow()
     repetition.save()
+
+    # TODO: update progress based on sm2
 
     return make_response({"repetition": repetition_schema.dump(repetition).data}, 200)

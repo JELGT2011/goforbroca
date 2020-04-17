@@ -1,7 +1,9 @@
 from glob import glob
+from os import path
 
 import click
 from flask.cli import FlaskGroup
+from sqlalchemy.exc import IntegrityError
 
 from goforbroca.app import create_app
 
@@ -31,6 +33,32 @@ def init():
 
 @cli.command("seed")
 def seed():
+    seed_languages()
+    seed_flashcards()
+
+
+@cli.command("seed_languages")
+def seed_languages():
+    from goforbroca.models.language import Language
+
+    click.echo("seeding languages")
+    kwargs = [
+        {'name': 'english', 'locale': 'en-US'},
+        {'name': '한국어', 'locale': 'ko-KR'},
+        {'name': '汉语', 'locale': 'cmn-CN'},
+        {'name': 'español', 'locale': 'es-ES'},
+    ]
+    try:
+        for k in kwargs:
+            Language.create(**k)
+    except IntegrityError:
+        pass
+
+    click.echo("done seeding languages")
+
+
+@cli.command("seed_flashcards")
+def seed_flashcards():
     seed_1000mostcommonwords_com()
 
 
@@ -43,23 +71,33 @@ def seed_1000mostcommonwords_com():
     click.echo("done seeding 1000mostcommonwords.com")
 
 
-# TODO: fix up the data for this
-#   1. some of the data is wrong
-#   2. add pronunciation, etc with google translate integration
 def seed_1000mostcommonwords_com_file(common_words_file):
     from goforbroca.models.deck import StandardDeck
     from goforbroca.models.flashcard import Flashcard
+    from goforbroca.models.language import Language
     from goforbroca.extensions import db
 
-    base_name = common_words_file.split('/')[-1]
+    base_name = common_words_file.split(path.sep)[-1]
     language_name = base_name.split('.')[0]
+    language = Language.query.filter_by(name=language_name).scalar()
+    if not language:
+        print(f'expected valid language name, instead got {language_name}')
+
     source = '1000mostcommonwords.com'
     click.echo(f"seeding {source}/{language_name}")
     standard_deck = StandardDeck.create(name=language_name, source=source)
     with open(common_words_file) as common_words_csv:
         for line in common_words_csv:
-            rank, front, back = line.strip().split(',')
-            db.session.add(Flashcard(standard_deck_id=standard_deck.id, front=front, back=back, rank=rank))
+            rank, front, back, audio = line.strip().split(',')
+            flashcard = Flashcard(
+                language_id=language.id,
+                standard_deck_id=standard_deck.id,
+                front=front,
+                back=back,
+                rank=rank,
+                audio=audio,
+            )
+            db.session.add(flashcard)
         db.session.commit()
 
 

@@ -74,6 +74,7 @@ def create_card(user: User) -> Response:
             return make_response({'msg': 'user_deck not found'}, 404)
 
     # TODO: allow back to be optional and translate based on language parameter
+    # TODO: add sound to cards
 
     flashcard = Flashcard.create(
         user_deck_id=user_deck_id,

@@ -27,6 +27,15 @@ def upgrade():
     )
 
     op.create_table(
+        'languages',
+        sa.Column('id', sa.Integer(), autoincrement=True, primary_key=True, nullable=False),
+        sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+        sa.Column('updated_at', sa.DateTime(timezone=True), nullable=True),
+        sa.Column('name', sa.String(128), nullable=False, unique=True),
+        sa.Column('locale', sa.String(64), nullable=False, unique=True),
+    )
+
+    op.create_table(
         'standard_decks',
         sa.Column('id', sa.Integer(), autoincrement=True, primary_key=True, nullable=False),
         sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
@@ -51,12 +60,14 @@ def upgrade():
         sa.Column('id', sa.Integer(), autoincrement=True, primary_key=True, nullable=False),
         sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
         sa.Column('updated_at', sa.DateTime(timezone=True), nullable=True),
+        sa.Column('language_id', sa.Integer(), sa.ForeignKey('languages.id'), nullable=True),
         sa.Column('standard_deck_id', sa.Integer(), sa.ForeignKey('standard_decks.id'), nullable=True),
         sa.Column('user_deck_id', sa.Integer(), sa.ForeignKey('user_decks.id'), nullable=True),
         sa.Column('user_id', sa.Integer(), sa.ForeignKey('users.id'), nullable=True),
         sa.Column('front', sa.String(1024), nullable=False),
         sa.Column('back', sa.String(1024), nullable=False),
         sa.Column('rank', sa.Integer(), nullable=True),
+        sa.Column('audio_url', sa.String(1024), nullable=True),
         sa.Column('viewed', sa.Boolean(), nullable=True),
         sa.Column('progress', sa.Float(), nullable=True),
     )
@@ -81,4 +92,5 @@ def downgrade():
     op.drop_table('flashcards')
     op.drop_table('user_decks')
     op.drop_table('standard_decks')
+    op.drop_table('languages')
     op.drop_table('users')
