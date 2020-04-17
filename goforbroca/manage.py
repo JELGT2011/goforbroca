@@ -28,11 +28,11 @@ def init():
     db.create_all()
     click.echo("done creating database")
 
-    seed()
+    seed_all()
 
 
-@cli.command("seed")
-def seed():
+@cli.command("seed_all")
+def seed_all():
     seed_languages()
     seed_flashcards()
 
@@ -88,14 +88,14 @@ def seed_1000mostcommonwords_com_file(common_words_file):
     standard_deck = StandardDeck.create(name=language_name, source=source)
     with open(common_words_file) as common_words_csv:
         for line in common_words_csv:
-            rank, front, back, audio = line.strip().split(',')
+            rank, front, back, audio_url = line.strip().split(',')
             flashcard = Flashcard(
                 language_id=language.id,
                 standard_deck_id=standard_deck.id,
                 front=front,
                 back=back,
                 rank=rank,
-                audio=audio,
+                audio_url=audio_url,
             )
             db.session.add(flashcard)
         db.session.commit()

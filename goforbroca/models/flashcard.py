@@ -7,7 +7,7 @@ from goforbroca.models.base import Base
 class Flashcard(Base):
     __tablename__ = 'flashcards'
 
-    language_id = db.Column(db.Integer(), ForeignKey('language.id'), nullable=True)
+    language_id = db.Column(db.Integer(), ForeignKey('languages.id'), nullable=True)
     standard_deck_id = db.Column(db.Integer(), ForeignKey('standard_decks.id'), nullable=True)
     user_deck_id = db.Column(db.Integer(), ForeignKey('user_decks.id'), nullable=True)
     user_id = db.Column(db.Integer(), ForeignKey('users.id'), nullable=True)
