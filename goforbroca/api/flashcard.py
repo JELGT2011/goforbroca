@@ -78,6 +78,7 @@ def create_card(user: User) -> Response:
         pass
 
     # TODO: add sound to cards
+    # TODO: handle google TTS credentials file in heroku
 
     flashcard = Flashcard.create(
         user_deck_id=user_deck_id,
