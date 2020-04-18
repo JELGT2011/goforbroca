@@ -3,6 +3,7 @@
 .idea/
 temp/
 tmp/
+google-credentials.json
 
 .flaskenv
 
