@@ -1,5 +1,5 @@
 import random
-from typing import Iterable, Optional
+from typing import Optional, Set
 
 from flask import Blueprint, Response, make_response, request
 from sqlalchemy import func
@@ -122,24 +122,23 @@ def delete_card(user: User, flashcard_id: int):
 @wrap_authenticated_user
 def view_new_card(user: User) -> Response:
     forked_user_deck_id = request.json.get('user_deck_id')
-    forked_user_decks = {user_deck for user_deck in UserDeck.query.filter_by(user_id=user.id, active=True)
-                         if user_deck.standard_deck_id is not None}
+    forked_user_deck_ids = {user_deck.id for user_deck in UserDeck.query.filter_by(user_id=user.id, active=True)
+                            if user_deck.standard_deck_id is not None}
     if forked_user_deck_id is not None:
-        if forked_user_deck_id not in {forked_user_decks}:
+        if forked_user_deck_id not in forked_user_deck_ids:
             return make_response({"msg": "invalid user_deck_id"}, 400)
 
         forked_user_deck = UserDeck.query.get(id=forked_user_deck_id)
-        forked_user_decks = {forked_user_deck}
+        forked_user_deck_ids = {forked_user_deck}
 
-    flashcard = _create_next_flashcard(forked_user_decks)
+    flashcard = _create_next_flashcard(forked_user_deck_ids)
     if flashcard is None:
         return make_response({"msg": "no remaining flashcards to learn"}, 200)
 
     return make_response({"flashcard": flashcard_schema.dump(flashcard).data}, 200)
 
 
-def _create_next_flashcard(forked_user_decks: Iterable[UserDeck]) -> Optional[Flashcard]:
-    forked_user_deck_ids = {deck.id for deck in forked_user_decks}
+def _create_next_flashcard(forked_user_deck_ids: Set[int]) -> Optional[Flashcard]:
     max_rank_per_forked_deck = (db.session.query(Flashcard.user_deck_id, func.max(Flashcard.rank))
                                 .filter(Flashcard.user_deck_id.in_(forked_user_deck_ids))
                                 .group_by(Flashcard.user_deck_id)).all()
