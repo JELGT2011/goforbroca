@@ -2,8 +2,10 @@ from sqlalchemy import ForeignKey
 
 from goforbroca.extensions import db
 from goforbroca.models.base import Base
+from goforbroca.models.user import User
 
 default_deck_name = 'My Vocabulary'
+default_standard_deck_max_rank = 1000
 
 
 class StandardDeck(Base):
@@ -17,8 +19,8 @@ class UserDeck(Base):
     __tablename__ = 'user_decks'
 
     name = db.Column(db.String(256), nullable=False)
-    user_id = db.Column(db.Integer(), ForeignKey('users.id'), nullable=False)
-    standard_deck_id = db.Column(db.Integer(), ForeignKey('standard_decks.id'), nullable=True)
+    user_id = db.Column(db.Integer(), ForeignKey(User.id), nullable=False)
+    standard_deck_id = db.Column(db.Integer(), ForeignKey(StandardDeck.id), nullable=True)
     active = db.Column(db.Boolean(), nullable=False)
 
     @classmethod

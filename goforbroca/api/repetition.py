@@ -42,14 +42,12 @@ def create_repetition(user: User) -> Response:
 
         flashcard = (Flashcard.query
                      .filter(Flashcard.user_deck_id == user_deck_id)
-                     .filter(Flashcard.viewed.is_(True))
                      .filter(or_(Flashcard.progress < min_learned_score, Flashcard.progress.is_(None)))
                      .order_by(asc(Flashcard.rank))
                      .limit(1).scalar())
     else:
         flashcard = (Flashcard.query
                      .filter(Flashcard.user_deck_id.in_(user_deck_ids))
-                     .filter(Flashcard.viewed.is_(True))
                      .filter(or_(Flashcard.progress < min_learned_score, Flashcard.progress.is_(None)))
                      .order_by(asc(Flashcard.rank))
                      .limit(1).scalar())

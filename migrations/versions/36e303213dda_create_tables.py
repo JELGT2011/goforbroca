@@ -68,7 +68,6 @@ def upgrade():
         sa.Column('back', sa.String(1024), nullable=False),
         sa.Column('rank', sa.Integer(), nullable=True),
         sa.Column('audio_url', sa.String(1024), nullable=True),
-        sa.Column('viewed', sa.Boolean(), nullable=True),
         sa.Column('progress', sa.Float(), nullable=True),
     )
 
