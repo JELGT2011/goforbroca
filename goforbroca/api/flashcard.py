@@ -128,8 +128,8 @@ def view_new_card(user: User) -> Response:
         if forked_user_deck_id not in forked_user_deck_ids:
             return make_response({"msg": "invalid user_deck_id"}, 400)
 
-        forked_user_deck = UserDeck.query.get(id=forked_user_deck_id)
-        forked_user_deck_ids = {forked_user_deck}
+        forked_user_deck = UserDeck.query.get(forked_user_deck_id)
+        forked_user_deck_ids = {forked_user_deck.id}
 
     flashcard = _create_next_flashcard(forked_user_deck_ids)
     if flashcard is None:

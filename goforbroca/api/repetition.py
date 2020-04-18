@@ -40,17 +40,13 @@ def create_repetition(user: User) -> Response:
         if user_deck_id not in user_deck_ids:
             return make_response({"msg": "invalid user_deck_id"}, 400)
 
-        flashcard = (Flashcard.query
-                     .filter(Flashcard.user_deck_id == user_deck_id)
-                     .filter(or_(Flashcard.progress < min_learned_score, Flashcard.progress.is_(None)))
-                     .order_by(asc(Flashcard.rank))
-                     .limit(1).scalar())
-    else:
-        flashcard = (Flashcard.query
-                     .filter(Flashcard.user_deck_id.in_(user_deck_ids))
-                     .filter(or_(Flashcard.progress < min_learned_score, Flashcard.progress.is_(None)))
-                     .order_by(asc(Flashcard.rank))
-                     .limit(1).scalar())
+        user_deck_ids = {user_deck_id}
+
+    flashcard = (Flashcard.query
+                 .filter(Flashcard.user_deck_id.in_(user_deck_ids))
+                 .filter(or_(Flashcard.progress < min_learned_score, Flashcard.progress.is_(None)))
+                 .order_by(asc(Flashcard.rank))
+                 .limit(1).scalar())
 
     if not flashcard:
         return make_response({"msg": "no flashcards to review (try forking a standard deck to get started)"}, 200)
