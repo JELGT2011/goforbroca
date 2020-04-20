@@ -1,7 +1,8 @@
-from datetime import datetime
+from datetime import datetime, timedelta
+from typing import Optional, Tuple, Iterable
 
 from flask import Blueprint, Response, make_response, request
-from sqlalchemy import asc, or_
+from sqlalchemy import asc, desc
 
 from goforbroca.api.flashcard import flashcard_schema
 from goforbroca.extensions import db, ma
@@ -10,8 +11,11 @@ from goforbroca.models.flashcard import Flashcard
 from goforbroca.models.repetition import Repetition
 from goforbroca.models.user import User
 from goforbroca.util.auth import wrap_authenticated_user
+from goforbroca.util.sm2 import scores_to_sm2
 
 min_learned_score = 0.95
+minutes_in_a_day = 24 * 60
+max_refresh_at_offset = timedelta(minutes=5)
 
 repetition_blueprint = Blueprint('repetition', __name__, url_prefix='/api/repetitions')
 
@@ -29,7 +33,6 @@ class RepetitionSchema(ma.ModelSchema):
 repetition_schema = RepetitionSchema()
 
 
-# TODO: don't always get the highest ranking card, incorporate last viewed time, progress, etc
 @repetition_blueprint.route('/', methods=['POST'])
 @wrap_authenticated_user
 def create_repetition(user: User) -> Response:
@@ -42,44 +45,65 @@ def create_repetition(user: User) -> Response:
 
         user_deck_ids = {user_deck_id}
 
-    flashcard = (Flashcard.query
-                 .filter(Flashcard.user_deck_id.in_(user_deck_ids))
-                 .filter(or_(Flashcard.progress < min_learned_score, Flashcard.progress.is_(None)))
-                 .order_by(asc(Flashcard.rank))
-                 .limit(1).scalar())
-
-    if not flashcard:
+    repetition, flashcard = _get_or_create_repetition_and_flashcard(user_deck_ids)
+    if repetition is None or flashcard is None:
         return make_response({"msg": "no flashcards to review (try forking a standard deck to get started)"}, 200)
-
-    previous = Repetition.query.filter_by(user_id=user.id, flashcard_id=flashcard.id).all()
-    if previous:
-        if any(repetition.active for repetition in previous):
-            repetition = next(r for r in previous if r.active)
-        else:
-            latest = max(previous, key=lambda r: r.iteration)
-            repetition = Repetition.create(
-                user_id=user.id,
-                user_deck_id=flashcard.user_deck_id,
-                flashcard_id=flashcard.id,
-                iteration=latest.iteration + 1,
-                active=True,
-                score=None
-            )
-    else:
-        repetition = Repetition.create(
-            user_id=user.id,
-            user_deck_id=flashcard.user_deck_id,
-            flashcard_id=flashcard.id,
-            iteration=1,
-            active=True,
-            score=None,
-        )
 
     response = {
         "repetition": repetition_schema.dump(repetition).data,
         "flashcard": flashcard_schema.dump(flashcard).data,
     }
     return make_response(response, 200)
+
+
+def _get_or_create_repetition_and_flashcard(user_deck_ids: Iterable[int]) -> Optional[Tuple[Repetition, Flashcard]]:
+
+    active_repetition = (Repetition.query
+                         .filter(Repetition.user_deck_id.in_(user_deck_ids))
+                         .filter(Repetition.active.is_(True))
+                         .scalar())
+    if active_repetition is not None:
+        repetition = active_repetition
+        flashcard = Flashcard.query.get(repetition.flashcard_id)
+        return repetition, flashcard
+
+    triage_flashcard = (Flashcard.query
+                        .filter(Flashcard.user_deck_id.in_(user_deck_ids))
+                        .order_by(asc(Flashcard.refresh_at))
+                        .limit(1).scalar())
+
+    max_refresh_at = datetime.utcnow() + max_refresh_at_offset
+    if not (triage_flashcard < max_refresh_at):
+        return None
+
+    flashcard = triage_flashcard
+    previous = (Repetition.query
+                .filter_by(flashcard_id=flashcard.id)
+                .order_by(desc(Repetition.iteration))
+                .limit(1).scalar())
+    if previous is None:
+        repetition = Repetition.create(
+            user_id=flashcard.user_id,
+            user_deck_id=flashcard.user_deck_id,
+            flashcard_id=flashcard.id,
+            iteration=1,
+            active=True,
+            score=None,
+        )
+    else:
+        if previous.active:
+            repetition = previous
+        else:
+            repetition = Repetition.create(
+                user_id=flashcard.user_id,
+                user_deck_id=flashcard.user_deck_id,
+                flashcard_id=flashcard.id,
+                iteration=previous.iteration + 1,
+                active=True,
+                score=None,
+            )
+
+    return repetition, flashcard
 
 
 @repetition_blueprint.route('/<repetition_id>', methods=['POST'])
@@ -91,11 +115,22 @@ def submit_repetition_answer(user: User, repetition_id: int) -> Response:
     if not repetition:
         return make_response({"msg": "repetition not found"}, 404)
 
+    previous = (Repetition.query
+                .filter_by(flashcard_id=repetition.flashcard_id, active=False)
+                .order_by(asc(Flashcard.completed_at)))
+
+    scores = [r.score for r in previous] + [score]
+    refresh_days_offset = scores_to_sm2(scores)
+    refresh_minutes_offset = refresh_days_offset * minutes_in_a_day
+    refresh_datetime_delta = timedelta(minutes=refresh_minutes_offset)
+
+    flashcard = Flashcard.query.get(repetition.flashcard_id)
+    flashcard.refresh_at = datetime.utcnow() + refresh_datetime_delta
+    flashcard.save()
+
     repetition.active = False
     repetition.score = score
     repetition.completed_at = datetime.utcnow()
     repetition.save()
-
-    # TODO: update progress based on sm2
 
     return make_response({"repetition": repetition_schema.dump(repetition).data}, 200)

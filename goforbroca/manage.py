@@ -96,6 +96,7 @@ def seed_1000mostcommonwords_com_file(common_words_file):
                 back=back,
                 rank=rank,
                 audio_url=audio_url,
+                refresh_at=None,
             )
             db.session.add(flashcard)
         db.session.commit()

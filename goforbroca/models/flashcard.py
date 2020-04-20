@@ -18,4 +18,4 @@ class Flashcard(Base):
     back = db.Column(db.String(1024), nullable=False)
     rank = db.Column(db.Integer(), nullable=True)
     audio_url = db.Column(db.String(1024), nullable=True)
-    progress = db.Column(db.Float(), nullable=True)
+    refresh_at = db.Column(db.DateTime(timezone=True), nullable=True)

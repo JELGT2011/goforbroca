@@ -1,4 +1,5 @@
 import random
+from datetime import datetime
 from typing import Optional, Set
 
 from flask import Blueprint, Response, make_response, request
@@ -7,7 +8,9 @@ from sqlalchemy import func
 from goforbroca.extensions import ma, db
 from goforbroca.models.deck import UserDeck, default_standard_deck_max_rank
 from goforbroca.models.flashcard import Flashcard
+from goforbroca.models.language import Language
 from goforbroca.models.user import User
+from goforbroca.util.audio import translate_flashcard
 from goforbroca.util.auth import wrap_authenticated_user
 from goforbroca.util.pagination import paginate
 from goforbroca.util.rest import get_unique_query_parameters
@@ -17,15 +20,12 @@ flashcard_blueprint = Blueprint('flashcards', __name__, url_prefix='/api/flashca
 list_cards_parameter_to_update_func = {
     'standard_deck_id': lambda query, value: query.filter_by(standard_deck_id=value),
     'user_deck_id': lambda query, value: query.filter_by(user_deck_id=value),
-    'min_progress': lambda query, value: query.filter(Flashcard.progress >= value),
-    'max_progress': lambda query, value: query.filter(value >= Flashcard.progress),
 }
 
 update_card_parameter_to_update_func = {
     'front': lambda flashcard, value: setattr(flashcard, 'front', value),
     'back': lambda flashcard, value: setattr(flashcard, 'back', value),
     'rank': lambda flashcard, value: setattr(flashcard, 'rank', value),
-    'progress': lambda flashcard, value: setattr(flashcard, 'progress', value),
 }
 
 
@@ -62,32 +62,32 @@ def list_cards(user: User) -> Response:
 @flashcard_blueprint.route('/', methods=['POST'])
 @wrap_authenticated_user
 def create_card(user: User) -> Response:
+    language_id = request.json.get('language_id')
     user_deck_id = request.json.get('user_deck_id')
     front = request.json['front']
     back = request.json.get('back')
     rank = request.json.get('rank')
-    progress = request.json.get('progress')
 
     if user_deck_id is not None:
         user_deck = UserDeck.query.filter_by(user_id=user.id, id=user_deck_id).scalar()
         if not user_deck:
             return make_response({'msg': 'user_deck not found'}, 404)
 
-    # TODO: allow back to be optional and translate based on language parameter
-    if back is None:
-        pass
+    language = Language.query.get(language_id)
+    if language is None:
+        return make_response({'msg': 'language not found'}, 404)
 
-    # TODO: add sound to cards
-    # TODO: handle google TTS credentials file in heroku
+    # TODO: allow back to be optional and translate based on language parameter
 
     flashcard = Flashcard.create(
+        language_id=language_id,
         user_deck_id=user_deck_id,
         user_id=user.id,
         front=front,
         back=back,
         rank=rank,
-        audio_url=None,
-        progress=progress,
+        audio_url=translate_flashcard(front, language.locale),
+        refresh_at=datetime.utcnow(),
     )
     return make_response({'flashcard': flashcard_schema.dump(flashcard).data}, 200)
 
@@ -171,5 +171,6 @@ def _create_next_flashcard(forked_user_deck_ids: Set[int]) -> Optional[Flashcard
         back=original.back,
         rank=original.rank,
         audio_url=original.audio_url,
+        refresh_at=datetime.utcnow(),
     )
     return clone

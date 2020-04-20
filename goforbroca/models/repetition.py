@@ -16,4 +16,4 @@ class Repetition(Base):
     iteration = db.Column(db.Integer(), nullable=False)
     active = db.Column(db.Boolean(), nullable=False)
     score = db.Column(db.Integer(), nullable=True)
-    completed_at = db.Column(db.DateTime(timezone=True))
+    completed_at = db.Column(db.DateTime(timezone=True), nullable=True)

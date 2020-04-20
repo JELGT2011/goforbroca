@@ -1,7 +1,17 @@
 from typing import List
 
+score_to_sm2_value = {
+    0: 0,
+    1: 3,
+    2: 5,
+}
 
-def sm2(x: List[int], alpha: float = 6.0, beta: float = -0.8, gamma: float = 0.28, delta: float = 0.02,
+
+def sm2(x: List[int],
+        alpha: float = 6.0,
+        beta: float = -0.8,
+        gamma: float = 0.28,
+        delta: float = 0.02,
         theta: float = 0.2) -> float:
     """
     Returns the number of days to delay the next review of an item by, fractionally, based on the history of answers
@@ -35,3 +45,8 @@ def sm2(x: List[int], alpha: float = 6.0, beta: float = -0.8, gamma: float = 0.2
 
     weighted_history_sum = sum(beta + gamma * x_i + delta * x_i * x_i for x_i in x)
     return alpha * (max(1.3, 2.5 + weighted_history_sum)) ** (theta * num_consecutively_correct)
+
+
+def scores_to_sm2(scores: List[int]) -> float:
+    history = [score_to_sm2_value[score] for score in scores]
+    return sm2(history)

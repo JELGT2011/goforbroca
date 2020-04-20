@@ -1,14 +1,11 @@
 import csv
-import hashlib
 from glob import glob
-from io import BytesIO
 from os import path
 from typing import List, Tuple, Optional
 
 from goforbroca.app import create_app
 from goforbroca.models.language import Language
-from goforbroca.util.aws import upload_fileobj_to_s3
-from goforbroca.util.google import text_to_speech
+from goforbroca.util.audio import translate_flashcard
 
 here = path.realpath(__file__)
 data_dir = path.realpath(path.join(here, path.pardir))
@@ -34,11 +31,7 @@ def upload_tts(csv_path: str, limit: int = 1000) -> Optional[List[Tuple[str, str
 
     for row in data[:limit]:
         rank, front, back = row
-        audio_content = text_to_speech(front, language.locale)
-        m = hashlib.md5()
-        m.update(audio_content)
-        key = m.hexdigest()
-        audio_path = upload_fileobj_to_s3(f'{language.locale}/{key}.mp3', BytesIO(audio_content))
+        audio_path = translate_flashcard(front, language.locale)
         results += [(*row, audio_path)]
 
     return results
