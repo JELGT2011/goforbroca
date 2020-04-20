@@ -62,6 +62,7 @@ def list_cards(user: User) -> Response:
 @flashcard_blueprint.route('/', methods=['POST'])
 @wrap_authenticated_user
 def create_card(user: User) -> Response:
+    # TODO: discover language by input (front)
     language_id = request.json.get('language_id')
     user_deck_id = request.json.get('user_deck_id')
     front = request.json['front']
@@ -78,6 +79,7 @@ def create_card(user: User) -> Response:
         return make_response({'msg': 'language not found'}, 404)
 
     # TODO: allow back to be optional and translate based on language parameter
+    audio_url = translate_flashcard(front, language.locale)
 
     flashcard = Flashcard.create(
         language_id=language_id,
@@ -86,7 +88,7 @@ def create_card(user: User) -> Response:
         front=front,
         back=back,
         rank=rank,
-        audio_url=translate_flashcard(front, language.locale),
+        audio_url=audio_url,
         refresh_at=datetime.utcnow(),
     )
     return make_response({'flashcard': flashcard_schema.dump(flashcard).data}, 200)
