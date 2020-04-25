@@ -56,7 +56,9 @@ def create_repetition(user: User) -> Response:
     return make_response(response, 200)
 
 
-def _get_or_create_repetition_and_flashcard(user_deck_ids: Iterable[int]) -> Optional[Tuple[Repetition, Flashcard]]:
+def _get_or_create_repetition_and_flashcard(
+        user_deck_ids: Iterable[int],
+) -> Tuple[Optional[Repetition], Optional[Flashcard]]:
 
     active_repetition = (Repetition.query
                          .filter(Repetition.user_deck_id.in_(user_deck_ids))
@@ -72,9 +74,13 @@ def _get_or_create_repetition_and_flashcard(user_deck_ids: Iterable[int]) -> Opt
                         .order_by(asc(Flashcard.refresh_at))
                         .limit(1).scalar())
 
-    max_refresh_at = datetime.utcnow() + max_refresh_at_offset
-    if not (triage_flashcard < max_refresh_at):
-        return None
+    if triage_flashcard is None:
+        return None, None
+
+    triage_fresh_at = triage_flashcard.refresh_at.timestamp()
+    max_refresh_at = (datetime.utcnow() + max_refresh_at_offset).timestamp()
+    if not (triage_fresh_at < max_refresh_at):
+        return None, None
 
     flashcard = triage_flashcard
     previous = (Repetition.query
