@@ -123,7 +123,7 @@ def submit_repetition_answer(user: User, repetition_id: int) -> Response:
 
     previous = (Repetition.query
                 .filter_by(flashcard_id=repetition.flashcard_id, active=False)
-                .order_by(asc(Flashcard.completed_at)))
+                .order_by(asc(Repetition.completed_at)))
 
     scores = [r.score for r in previous] + [score]
     refresh_days_offset = scores_to_sm2(scores)
