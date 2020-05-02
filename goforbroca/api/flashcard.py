@@ -10,8 +10,9 @@ from goforbroca.models.deck import UserDeck, default_standard_deck_max_rank
 from goforbroca.models.flashcard import Flashcard
 from goforbroca.models.language import Language
 from goforbroca.models.user import User
-from goforbroca.util.audio import translate_flashcard
+from goforbroca.util.audio import create_and_store_tts
 from goforbroca.util.auth import wrap_authenticated_user
+from goforbroca.util.google import detect_language, translate_text
 from goforbroca.util.pagination import paginate
 from goforbroca.util.rest import get_unique_query_parameters
 
@@ -62,8 +63,6 @@ def list_cards(user: User) -> Response:
 @flashcard_blueprint.route('/', methods=['POST'])
 @wrap_authenticated_user
 def create_card(user: User) -> Response:
-    # TODO: discover language by input (front)
-    language_id = request.json.get('language_id')
     user_deck_id = request.json.get('user_deck_id')
     front = request.json['front']
     back = request.json.get('back')
@@ -74,15 +73,22 @@ def create_card(user: User) -> Response:
         if not user_deck:
             return make_response({'msg': 'user_deck not found'}, 404)
 
-    language = Language.query.get(language_id)
+    language_locale = detect_language(front)
+    if language_locale is None:
+        return make_response({'msg': 'language not supported'}, 400)
+
+    language = Language.query.filter_by(locale=language_locale).scalar()
     if language is None:
         return make_response({'msg': 'language not found'}, 404)
 
-    # TODO: allow back to be optional and translate based on language parameter
-    audio_url = translate_flashcard(front, language.locale)
+    if back is None:
+        # TODO: support translating to languages other than English
+        back = translate_text(front, 'en')
+
+    audio_url = create_and_store_tts(front, language_locale)
 
     flashcard = Flashcard.create(
-        language_id=language_id,
+        language_id=language.id,
         user_deck_id=user_deck_id,
         user_id=user.id,
         front=front,

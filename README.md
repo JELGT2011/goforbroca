@@ -15,11 +15,6 @@ update user: `PUT` `{}`  # TODO: not implemented
 ```
 
 ```
-Language
-list languages: `GET /api/languages`
-```
-
-```
 Deck
 get standard decks: `GET /api/decks/standard`
 

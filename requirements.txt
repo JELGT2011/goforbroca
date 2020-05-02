@@ -10,6 +10,7 @@ flask-sqlalchemy
 genanki
 google-auth==1.11.2
 google-cloud-texttospeech
+google-cloud-translate
 gunicorn
 marshmallow-sqlalchemy
 marshmallow<3

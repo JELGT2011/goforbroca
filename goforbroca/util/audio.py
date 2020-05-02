@@ -5,7 +5,7 @@ from goforbroca.util.aws import upload_fileobj_to_s3
 from goforbroca.util.google import text_to_speech
 
 
-def translate_flashcard(text: str, locale: str) -> str:
+def create_and_store_tts(text: str, locale: str) -> str:
     audio_content = text_to_speech(text, locale)
 
     m = hashlib.md5()

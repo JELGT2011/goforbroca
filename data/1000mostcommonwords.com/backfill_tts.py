@@ -5,7 +5,7 @@ from typing import List, Tuple, Optional
 
 from goforbroca.app import create_app
 from goforbroca.models.language import Language
-from goforbroca.util.audio import translate_flashcard
+from goforbroca.util.audio import create_and_store_tts
 
 here = path.realpath(__file__)
 data_dir = path.realpath(path.join(here, path.pardir))
@@ -31,7 +31,7 @@ def upload_tts(csv_path: str, limit: int = 1000) -> Optional[List[Tuple[str, str
 
     for row in data[:limit]:
         rank, front, back = row
-        audio_path = translate_flashcard(front, language.locale)
+        audio_path = create_and_store_tts(front, language.locale)
         results += [(*row, audio_path)]
 
     return results
