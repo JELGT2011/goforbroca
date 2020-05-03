@@ -1,66 +1,50 @@
-# https://github.com/Networks-Learning/memorize
-
-####
-# This code contains the algorithm to obtain samples from optimal reviewing intensity.
-# This script read two csv files, preprocesed_weights.csv, observations_1k.csv and outputs revieiw times.
-# For user-item pairs that are not reviewed in the period, we show empty string.
-####
+from collections import Counter
+from typing import List, Optional
 
 import numpy as np
-import pandas as pd
+
+right = -0.0061
+wrong = -0.0802
+bias = 7.2145
+
+# TODO: tune parameter per user and/or word
+alpha = 2 * 0.051345788818587285
 
 Q = 1.0  # parameter q defined in eq. 8 in the paper.
 T = 10.0  # number of days in the future to generate reviewing timeself.
 
+score_to_memorize_wrong = frozenset([0])
+score_to_memorize_correct = frozenset([1, 2])
 
-def intensity(t, n_t, q):
-    return 1.0 / np.sqrt(q) * (1 - np.exp(-n_t * t))
+
+def intensity(t, n_t):
+    return 1.0 / np.sqrt(Q) * (1 - np.exp(-n_t * t))
 
 
-def sampler(n_t, q, T):
+# TODO: either I broke this while reverse engineering it from its previously convoluted state,
+#   or there is something wrong this algorithm
+def memorize(n_t) -> Optional[float]:
+    """
+    Implements the memorize algorithm.
+    Reference: https://github.com/Networks-Learning/memorize
+    """
+
     t = 0
     while True:
-        max_int = 1.0 / np.sqrt(q)
+        max_int = 1.0 / np.sqrt(Q)
         t_ = np.random.exponential(1 / max_int)
         if t_ + t > T:
             return None
 
         t = t + t_
-        proposed_int = intensity(t, n_t, q)
+        proposed_int = intensity(t, n_t)
         if np.random.uniform(0, 1, 1)[0] < proposed_int / max_int:
             return t
 
 
-if __name__ == '__main__':
-    output = []
-    output_file = open("output.csv", "w")
-    results_hlr = pd.read_csv("hlr.duolingo.weights", index_col=0)
-
-    results_hlr = results_hlr.set_index("label")
-    right = results_hlr['value'].loc["right"]
-    wrong = results_hlr['value'].loc["wrong"]
-    results_hlr["n0"] = 2 ** (-(results_hlr['value'][3:] + results_hlr['value'].loc['bias']))
-    duo_alpha = (-2 ** (-results_hlr['value'].loc['right']) + 1)
-    duo_beta = (2 ** (-results_hlr['value'].loc['wrong']) - 1)
-    # results_hlr['lexeme_id'] = results_hlr['lexeme_id'].str.slice(start=3
-    hlr = results_hlr[3:].reset_index().set_index('lexeme_id')
-    i = 0
-    print("Generating reviewing times for user-item pairs")
-    print("Maximum duration: {}, q: {}".format(T, Q))
-    with open("observation_1k.csv") as f:
-        f.readline()
-        output_file.write(", ".join(("user-id", "lexeme_id", "review time (in days)\n")))
-        i += 1
-        for line in f:
-            values = line.split(",")
-            lid = values[2]
-            n_correct = float(values[3])
-            n_wrong = float(values[4]) - float(values[3])
-
-            n_t = hlr['value'].loc[lid] * 2 ** (-(right * n_correct + wrong * n_wrong))
-            t_rev = sampler(n_t, Q, T)
-            output_file.write(", ".join((values[1], values[2], str(t_rev) if t_rev is not None else "")) + "\n")
-            if i % 100 == 0:
-                print("Finished processing {} lines.".format(i))
-            i += 1
-    print("Finished generating review times.")
+def scores_to_memorize(scores: List[int]) -> float:
+    counter = Counter(scores)
+    n_correct = sum(v for k, v in counter.items() if k in score_to_memorize_correct)
+    n_wrong = sum(v for k, v in counter.items() if k in score_to_memorize_wrong)
+    n_t = alpha ** (-(right * n_correct + wrong * n_wrong))
+    return memorize(n_t)
