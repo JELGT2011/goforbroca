@@ -13,7 +13,6 @@ from goforbroca.models.user import User
 from goforbroca.util.auth import wrap_authenticated_user
 from goforbroca.util.sm2 import scores_to_sm2
 
-min_learned_score = 0.95
 minutes_in_a_day = 24 * 60
 max_refresh_at_offset = timedelta(minutes=5)
 

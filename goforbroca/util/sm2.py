@@ -7,6 +7,7 @@ score_to_sm2_value = {
 }
 
 
+# TODO: tune parameters per user and/or word
 # original parameter values:
 #   alpha: float = 6.0,
 #   beta: float = -0.8,
