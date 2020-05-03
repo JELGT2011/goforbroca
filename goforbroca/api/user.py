@@ -9,7 +9,7 @@ from goforbroca.util.auth import wrap_authenticated_user, wrap_google_user
 user_blueprint = Blueprint('user', __name__, url_prefix='/api/users')
 
 
-class UserSchema(ma.ModelSchema):
+class UserSchema(ma.SQLAlchemyAutoSchema):
 
     class Meta:
         model = User

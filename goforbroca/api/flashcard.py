@@ -30,7 +30,7 @@ update_card_parameter_to_update_func = {
 }
 
 
-class FlashcardSchema(ma.ModelSchema):
+class FlashcardSchema(ma.SQLAlchemyAutoSchema):
 
     standard_deck_id = ma.Int(dump_only=True)
     user_deck_id = ma.Int(dump_only=True)

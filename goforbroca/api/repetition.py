@@ -20,7 +20,7 @@ max_refresh_at_offset = timedelta(minutes=5)
 repetition_blueprint = Blueprint('repetition', __name__, url_prefix='/api/repetitions')
 
 
-class RepetitionSchema(ma.ModelSchema):
+class RepetitionSchema(ma.SQLAlchemyAutoSchema):
 
     user_deck_id = ma.Int(dump_only=True)
     flashcard_id = ma.Int(dump_only=True)

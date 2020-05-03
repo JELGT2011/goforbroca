@@ -9,7 +9,7 @@ from goforbroca.util.auth import wrap_authenticated_user
 deck_blueprint = Blueprint('deck', __name__, url_prefix='/api/decks')
 
 
-class StandardDeckSchema(ma.ModelSchema):
+class StandardDeckSchema(ma.SQLAlchemyAutoSchema):
 
     class Meta:
         model = StandardDeck
@@ -20,7 +20,7 @@ standard_deck_schema = StandardDeckSchema()
 standard_decks_schema = StandardDeckSchema(many=True)
 
 
-class UserDeckSchema(ma.ModelSchema):
+class UserDeckSchema(ma.SQLAlchemyAutoSchema):
 
     standard_deck_id = ma.Int(dump_only=True)
 

@@ -46,14 +46,12 @@ def register_blueprints(app):
     """
     from goforbroca.api.deck import deck_blueprint
     from goforbroca.api.flashcard import flashcard_blueprint
-    from goforbroca.api.language import language_blueprint
     from goforbroca.api.repetition import repetition_blueprint
     from goforbroca.api.user import user_blueprint
 
     app.url_map.strict_slashes = False
     app.register_blueprint(deck_blueprint)
     app.register_blueprint(flashcard_blueprint)
-    app.register_blueprint(language_blueprint)
     app.register_blueprint(repetition_blueprint)
     app.register_blueprint(user_blueprint)
 
