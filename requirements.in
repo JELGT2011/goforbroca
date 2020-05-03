@@ -1,0 +1,22 @@
+-e .
+boto3
+celery[redis]
+flask
+flask-cors
+flask-marshmallow
+flask-migrate
+flask-restful
+flask-sqlalchemy
+genanki
+google-auth
+google-cloud-texttospeech
+google-cloud-translate
+gunicorn
+marshmallow-sqlalchemy
+marshmallow<3
+numpy
+passlib
+psycopg2
+python-dotenv
+requests
+strsimpy
