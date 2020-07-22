@@ -11,7 +11,8 @@ from goforbroca.models.language import Language
 from goforbroca.util.aws import download_fileobj_from_s3, bucket_url
 
 here = path.realpath(__file__)
-data_dir = path.realpath(path.join(here, path.pardir))
+root_dir = path.realpath(path.join(here, path.pardir))
+data_dir = path.join(root_dir, 'data')
 media_dir = path.join(data_dir, 'media')
 
 
@@ -97,7 +98,7 @@ def main():
     app = create_app()
     app.app_context().push()
 
-    for csv_file in glob(f'{data_dir}/*.csv'):
+    for csv_file in glob(path.join(data_dir, '*.csv')):
         media_files = get_media_files(csv_file)
         export_from_csv(csv_file, media_files)
 

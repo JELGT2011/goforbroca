@@ -10,9 +10,8 @@ from goforbroca.models.deck import UserDeck, default_standard_deck_max_rank
 from goforbroca.models.flashcard import Flashcard
 from goforbroca.models.language import Language
 from goforbroca.models.user import User
-from goforbroca.util.audio import create_and_store_tts
 from goforbroca.util.auth import wrap_authenticated_user
-from goforbroca.util.google import detect_language, translate_text
+from goforbroca.util.google import detect_language
 from goforbroca.util.pagination import paginate
 from goforbroca.util.rest import get_unique_query_parameters
 
@@ -63,10 +62,10 @@ def list_cards(user: User) -> Response:
 @flashcard_blueprint.route('/', methods=['POST'])
 @wrap_authenticated_user
 def create_card(user: User) -> Response:
-    user_deck_id = request.json.get('user_deck_id')
     front = request.json['front']
     back = request.json.get('back')
     rank = request.json.get('rank')
+    user_deck_id = request.json.get('user_deck_id')
 
     if user_deck_id is not None:
         user_deck = UserDeck.query.filter_by(user_id=user.id, id=user_deck_id).scalar()
@@ -81,21 +80,13 @@ def create_card(user: User) -> Response:
     if language is None:
         return make_response({'msg': 'language not found'}, 404)
 
-    if back is None:
-        # TODO: support translating to languages other than English
-        back = translate_text(front, 'en')
-
-    audio_url = create_and_store_tts(front, language_locale)
-
-    flashcard = Flashcard.create(
-        language_id=language.id,
-        user_deck_id=user_deck_id,
-        user_id=user.id,
+    flashcard = Flashcard.create_from_user_data(
+        user=user,
+        language=language,
         front=front,
         back=back,
         rank=rank,
-        audio_url=audio_url,
-        refresh_at=datetime.utcnow(),
+        user_deck_id=user_deck_id,
     )
     return make_response({'flashcard': flashcard_schema.dump(flashcard).data}, 200)
 
