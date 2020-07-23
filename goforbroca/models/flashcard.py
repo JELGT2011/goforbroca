@@ -17,8 +17,8 @@ class Flashcard(Base):
 
     language_id = db.Column(db.Integer(), ForeignKey(Language.id), nullable=True)
     standard_deck_id = db.Column(db.Integer(), ForeignKey(StandardDeck.id), nullable=True)
-    user_deck_id = db.Column(db.Integer(), ForeignKey(UserDeck.id), nullable=True)
-    user_id = db.Column(db.Integer(), ForeignKey(User.id), nullable=True)
+    user_deck_id = db.Column(db.Integer(), ForeignKey(UserDeck.id, ondelete='CASCADE'), nullable=True)
+    user_id = db.Column(db.Integer(), ForeignKey(User.id, ondelete='CASCADE'), nullable=True)
     front = db.Column(db.String(1024), nullable=False)
     back = db.Column(db.String(1024), nullable=False)
     rank = db.Column(db.Integer(), nullable=True)

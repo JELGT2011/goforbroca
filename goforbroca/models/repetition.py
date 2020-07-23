@@ -10,9 +10,9 @@ from goforbroca.models.user import User
 class Repetition(Base):
     __tablename__ = 'repetitions'
 
-    user_id = db.Column(db.Integer(), ForeignKey(User.id), nullable=False)
-    user_deck_id = db.Column(db.Integer(), ForeignKey(UserDeck.id), nullable=False)
-    flashcard_id = db.Column(db.Integer(), ForeignKey(Flashcard.id), nullable=False)
+    user_id = db.Column(db.Integer(), ForeignKey(User.id, ondelete='CASCADE'), nullable=False)
+    user_deck_id = db.Column(db.Integer(), ForeignKey(UserDeck.id, ondelete='CASCADE'), nullable=False)
+    flashcard_id = db.Column(db.Integer(), ForeignKey(Flashcard.id, ondelete='CASCADE'), nullable=False)
     iteration = db.Column(db.Integer(), nullable=False)
     active = db.Column(db.Boolean(), nullable=False)
     score = db.Column(db.Integer(), nullable=True)

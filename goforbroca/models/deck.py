@@ -19,7 +19,7 @@ class UserDeck(Base):
     __tablename__ = 'user_decks'
 
     name = db.Column(db.String(256), nullable=False)
-    user_id = db.Column(db.Integer(), ForeignKey(User.id), nullable=False)
+    user_id = db.Column(db.Integer(), ForeignKey(User.id, ondelete='CASCADE'), nullable=False)
     standard_deck_id = db.Column(db.Integer(), ForeignKey(StandardDeck.id), nullable=True)
     active = db.Column(db.Boolean(), nullable=False)
 

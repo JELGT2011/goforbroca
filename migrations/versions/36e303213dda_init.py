@@ -1,7 +1,6 @@
-"""create tables
+"""init
 
 Revision ID: 36e303213dda
-Revises: 
 Create Date: 2019-12-15 14:39:17.761151
 
 """
@@ -50,7 +49,7 @@ def upgrade():
         sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
         sa.Column('updated_at', sa.DateTime(timezone=True), nullable=True),
         sa.Column('name', sa.String(256), nullable=False),
-        sa.Column('user_id', sa.Integer(), sa.ForeignKey('users.id'), nullable=False),
+        sa.Column('user_id', sa.Integer(), sa.ForeignKey('users.id', ondelete='CASCADE'), nullable=False),
         sa.Column('standard_deck_id', sa.Integer(), sa.ForeignKey('standard_decks.id'), nullable=True),
         sa.Column('active', sa.Boolean(), nullable=False),
     )
@@ -62,8 +61,8 @@ def upgrade():
         sa.Column('updated_at', sa.DateTime(timezone=True), nullable=True),
         sa.Column('language_id', sa.Integer(), sa.ForeignKey('languages.id'), nullable=True),
         sa.Column('standard_deck_id', sa.Integer(), sa.ForeignKey('standard_decks.id'), nullable=True),
-        sa.Column('user_deck_id', sa.Integer(), sa.ForeignKey('user_decks.id'), nullable=True),
-        sa.Column('user_id', sa.Integer(), sa.ForeignKey('users.id'), nullable=True),
+        sa.Column('user_deck_id', sa.Integer(), sa.ForeignKey('user_decks.id', ondelete='CASCADE'), nullable=True),
+        sa.Column('user_id', sa.Integer(), sa.ForeignKey('users.id', ondelete='CASCADE'), nullable=True),
         sa.Column('front', sa.String(1024), nullable=False),
         sa.Column('back', sa.String(1024), nullable=False),
         sa.Column('rank', sa.Integer(), nullable=True),
@@ -76,9 +75,9 @@ def upgrade():
         sa.Column('id', sa.Integer(), autoincrement=True, primary_key=True, nullable=False),
         sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
         sa.Column('updated_at', sa.DateTime(timezone=True), nullable=True),
-        sa.Column('user_id', sa.Integer(), sa.ForeignKey('users.id'), nullable=False),
-        sa.Column('user_deck_id', sa.Integer(), sa.ForeignKey('user_decks.id'), nullable=False),
-        sa.Column('flashcard_id', sa.Integer(), sa.ForeignKey('flashcards.id'), nullable=False),
+        sa.Column('user_id', sa.Integer(), sa.ForeignKey('users.id', ondelete='CASCADE'), nullable=False),
+        sa.Column('user_deck_id', sa.Integer(), sa.ForeignKey('user_decks.id', ondelete='CASCADE'), nullable=False),
+        sa.Column('flashcard_id', sa.Integer(), sa.ForeignKey('flashcards.id', ondelete='CASCADE'), nullable=False),
         sa.Column('iteration', sa.Integer(), nullable=False),
         sa.Column('active', sa.Boolean(), nullable=False),
         sa.Column('score', sa.Integer(), nullable=True),
