@@ -55,7 +55,7 @@ pip install -r requirements.txt
 pip install -e .
 ```
 
-You have now access to cli commands and you can init your project.
+You now have access to cli commands and you can init your project.
 
 ```bash
 goforbroca init
