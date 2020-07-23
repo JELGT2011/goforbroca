@@ -30,3 +30,8 @@ class Base(db.Model):
         db.session.add(self)
         db.session.commit()
         return self
+
+    def delete(self) -> T:
+        db.session.delete(self)
+        db.session.commit()
+        return self
