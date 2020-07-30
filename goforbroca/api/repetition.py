@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from random import random
 from typing import Optional, Tuple, Iterable
 
 from flask import Blueprint, Response, make_response, request
@@ -48,6 +49,10 @@ def create_repetition(user: User) -> Response:
     if repetition is None or flashcard is None:
         return make_response({"msg": "no flashcards to review (try forking a standard deck to get started)"}, 200)
 
+    # 50% chance to flip the card
+    if random() < 0.5:
+        flashcard.front, flashcard.back = flashcard.back, flashcard.front
+
     response = {
         "repetition": repetition_schema.dump(repetition).data,
         "flashcard": flashcard_schema.dump(flashcard).data,
@@ -72,7 +77,6 @@ def _get_or_create_repetition_and_flashcard(
                         .filter(Flashcard.user_deck_id.in_(user_deck_ids))
                         .order_by(asc(Flashcard.refresh_at))
                         .limit(1).scalar())
-
     if triage_flashcard is None:
         return None, None
 
