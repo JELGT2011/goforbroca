@@ -16,7 +16,7 @@ def detect_language(text: str) -> Optional[str]:
     if response['confidence'] < detect_language_min_confidence:
         return None
 
-    return response['language']
+    return response['language'][:2]
 
 
 def translate_text(text: str, language_code: str) -> str:

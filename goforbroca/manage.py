@@ -43,10 +43,10 @@ def seed_languages():
 
     click.echo("seeding languages")
     kwargs = [
-        {'name': 'english', 'locale': 'en-US'},
-        {'name': '한국어', 'locale': 'ko-KR'},
-        {'name': '汉语', 'locale': 'cmn-CN'},
-        {'name': 'español', 'locale': 'es-ES'},
+        {'name': 'english', 'locale': 'en'},
+        {'name': '한국어', 'locale': 'ko'},
+        {'name': '汉语', 'locale': 'zh'},
+        {'name': 'español', 'locale': 'es'},
     ]
     try:
         for k in kwargs:
