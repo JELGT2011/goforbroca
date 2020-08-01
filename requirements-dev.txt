@@ -2,6 +2,7 @@
 factory_boy
 flask-shell-ipython
 ipython
+matplotlib
 pytest
 pytest-factoryboy
 pytest-flask
