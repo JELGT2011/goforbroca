@@ -43,7 +43,13 @@ def get_standard_decks(user: User) -> Response:
 @deck_blueprint.route('/user', methods=['GET'])
 @wrap_authenticated_user
 def get_user_decks(user: User) -> Response:
-    decks = UserDeck.query.filter_by(user_id=user.id)
+    user_id = request.args.get('user_id')
+    decks = None
+    if user_id is None:
+        decks = UserDeck.query.all()
+        
+    else:
+        decks = UserDeck.query.filter_by(user_id=user.id)
     return make_response({'decks': user_decks_schema.dump(decks).data}, 200)
 
 

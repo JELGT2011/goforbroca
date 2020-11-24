@@ -5,7 +5,7 @@ from flask import request, make_response
 from google.auth.transport import requests
 from google.oauth2 import id_token
 
-from goforbroca.config import GOOGLE_CLIENT_ID
+from goforbroca.config import GOOGLE_CLIENT_ID, DEBUG
 from goforbroca.models.user import User
 
 google_auth_issuers = frozenset(['accounts.google.com', 'https://accounts.google.com'])
@@ -27,6 +27,11 @@ def wrap_authenticated_user(wrapped: Callable) -> Callable:
 
     @wraps(wrapped)
     def func(*args, **kwargs):
+        if DEBUG:
+            google_id = '1'
+            user = User.query.filter_by(google_id=google_id).scalar()
+            return wrapped(user, *args, **kwargs)
+
         auth_header = request.headers.get('Authorization')
         if not auth_header:
             return make_response({'msg': 'authentication header required'}, 403)
@@ -53,6 +58,9 @@ def wrap_google_user(wrapped: Callable) -> Callable:
 
     @wraps(wrapped)
     def func(*args, **kwargs):
+        if DEBUG:
+            return wrapped('1', *args, **kwargs)
+
         auth_header = request.headers.get('Authorization')
         if not auth_header:
             return make_response({'msg': 'authentication header required'}, 403)
