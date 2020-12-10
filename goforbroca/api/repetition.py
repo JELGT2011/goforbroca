@@ -31,6 +31,7 @@ class RepetitionSchema(ma.SQLAlchemyAutoSchema):
 
 
 repetition_schema = RepetitionSchema()
+repetitions_schema = RepetitionSchema(many=True)
 
 
 @repetition_blueprint.route('/', methods=['POST'])
@@ -143,3 +144,15 @@ def submit_repetition_answer(user: User, repetition_id: int) -> Response:
     repetition.save()
 
     return make_response({"repetition": repetition_schema.dump(repetition).data}, 200)
+
+
+@repetition_blueprint.route('/', methods=['GET'])
+@wrap_authenticated_user
+def get_repetitions(user: User):
+    flashcard_id = request.json.get('flashcard_id')
+    repetitions = Repetition.query.filter_by(user_id=user.id)
+
+    if flashcard_id is not None:
+        repetitions = repetitions.filter_by(flashcard_id=flashcard_id).order_by(asc(Repetition.iteration))
+    
+    return make_response({"repetitions": repetitions_schema.dump(repetitions).data}, 200)
