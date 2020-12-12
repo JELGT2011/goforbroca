@@ -1,7 +1,7 @@
 from flask import Blueprint, Response, make_response, request
 
 from goforbroca.extensions import db, ma
-from goforbroca.models.deck import StandardDeck, UserDeck
+from goforbroca.models.deck import StandardDeck, UserDeck, ForkedUserDeck
 from goforbroca.models.flashcard import Flashcard
 from goforbroca.models.user import User
 from goforbroca.util.auth import wrap_authenticated_user
@@ -31,6 +31,20 @@ class UserDeckSchema(ma.SQLAlchemyAutoSchema):
 
 user_deck_schema = UserDeckSchema()
 user_decks_schema = UserDeckSchema(many=True)
+
+
+class ForkedUserDeckSchema(ma.SQLAlchemyAutoSchema):
+
+    standard_deck_id = ma.Int(dump_only=True)
+    author_id = ma.Int()
+
+    class Meta:
+        model = ForkedUserDeck
+        sqla_session = db.session
+
+
+forked_user_deck_schema = ForkedUserDeckSchema()
+forked_user_decks_schema = ForkedUserDeckSchema(many=True)
 
 
 @deck_blueprint.route('/standard', methods=['GET'])
@@ -70,6 +84,28 @@ def fork_standard_deck(user: User, standard_deck_id: int) -> Response:
 
     return make_response({'deck': user_deck_schema.dump(user_deck).data}, 200)
 
+
+@deck_blueprint.route('/user/<user_deck_id>/fork', methods=['POST'])
+@wrap_authenticated_user
+def fork_user_deck(user: User, user_deck_id: int) -> Response:
+    user_deck = UserDeck.query.get(user_deck_id)
+
+    if user_deck is None:
+        return make_response({'msg': 'deck does not exist'}, 400)
+
+    if user_deck.user_id == user.id:
+        return make_response({'msg': 'cannot fork your own deck'}, 400)
+
+    forked_user_deck = ForkedUserDeck.create(
+        name=user_deck.name,
+        user_id=user.id,
+        author_id=user_deck.user_id,
+        active=True,
+    )
+
+
+    return make_response({'deck': forked_user_deck_schema.dump(forked_user_deck).data}, 200)
+    
 
 @deck_blueprint.route('/user', methods=['POST'])
 @wrap_authenticated_user
