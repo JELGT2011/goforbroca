@@ -89,9 +89,13 @@ def fork_standard_deck(user: User, standard_deck_id: int) -> Response:
 @wrap_authenticated_user
 def fork_user_deck(user: User, user_deck_id: int) -> Response:
     user_deck = UserDeck.query.get(user_deck_id)
+    already_exist = ForkedUserDeck.query.filter_by(user_id=user.id).scalar()
 
     if user_deck is None:
         return make_response({'msg': 'deck does not exist'}, 400)
+
+    if already_exist is not None:
+        return make_response({'msg': 'this deck has already been forked'}, 400)
 
     if user_deck.user_id == user.id:
         return make_response({'msg': 'cannot fork your own deck'}, 400)
@@ -102,7 +106,6 @@ def fork_user_deck(user: User, user_deck_id: int) -> Response:
         author_id=user_deck.user_id,
         active=True,
     )
-
 
     return make_response({'deck': forked_user_deck_schema.dump(forked_user_deck).data}, 200)
     
